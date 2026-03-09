@@ -2,91 +2,48 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
 <title>รวมเว็บไซต์</title>
 
-<!-- Bootstrap -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-
 <style>
-
 body{
-    background: linear-gradient(135deg,#eef3f8,#dfe9f3);
-    font-family: "Segoe UI", Tahoma, sans-serif;
-    min-height:100vh;
+    font-family: Arial;
+    background:#f4f6f9;
+    text-align:center;
+    padding:40px;
 }
 
-.header{
-    margin-top:60px;
-    margin-bottom:40px;
+h1{
+    color:#333;
 }
 
-.header h1{
-    font-weight:700;
-    color:#2c3e50;
+#list{
+    margin-top:30px;
 }
 
-.header p{
-    color:#6c757d;
+.card{
+    display:inline-block;
+    margin:10px;
+    padding:15px 25px;
+    background:white;
+    border-radius:8px;
+    box-shadow:0 2px 6px rgba(0,0,0,0.1);
 }
 
-.card-link{
-    transition:all .25s;
-    border:none;
-    border-radius:14px;
-    box-shadow:0 6px 18px rgba(0,0,0,0.08);
-}
-
-.card-link:hover{
-    transform:translateY(-5px);
-    box-shadow:0 10px 25px rgba(0,0,0,0.15);
-}
-
-.card-body a{
+.card a{
     text-decoration:none;
     font-size:18px;
-    font-weight:600;
-    color:#0d6efd;
+    color:#007bff;
 }
-
-.card-body a:hover{
-    color:#084298;
-}
-
-.icon{
-    font-size:30px;
-    margin-bottom:10px;
-    color:#0d6efd;
-}
-
-footer{
-    margin-top:60px;
-    padding:20px;
-    color:#6c757d;
-    font-size:14px;
-}
-
 </style>
 
 </head>
 
 <body>
 
-<div class="container">
+<h1>ยินดีต้อนรับ</h1>
+<p>รวมเว็บไซต์ในโฟลเดอร์ต่าง ๆ</p>
 
-    <div class="text-center header">
-        <h1>ยินดีต้อนรับ</h1>
-        <p>รวมเว็บไซต์ในโฟลเดอร์ต่าง ๆ</p>
-    </div>
-
-    <div class="row g-4" id="list"></div>
-
-</div>
-
-<footer class="text-center">
-เว็บไซต์สร้างด้วย GitHub Pages
-</footer>
+<div id="list"></div>
 
 <script>
 
@@ -104,18 +61,12 @@ fetch(`https://api.github.com/repos/${user}/${repo}/contents/`)
         if(item.type === "dir"){
 
             const div = document.createElement("div")
-            div.className = "col-12 col-sm-6 col-md-4 col-lg-3"
+            div.className = "card"
 
-            div.innerHTML = `
-            <div class="card card-link h-100 text-center">
-                <div class="card-body">
-                    <div class="icon">🌐</div>
-                    <a href="https://${user}.github.io/${repo}/${item.name}/" target="_blank">
-                        ${item.name}
-                    </a>
-                </div>
-            </div>
-            `
+            div.innerHTML =
+            `<a href="https://${user}.github.io/${repo}/${item.name}/" target="_blank">
+            ${item.name}
+            </a>`
 
             list.appendChild(div)
 
