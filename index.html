@@ -433,103 +433,121 @@
   }
 
   const apiUrl = `https://api.github.com/repos/${user}/${repo}/contents/`;
+  const CACHE_KEY = `gh_dirs_${user}_${repo}`;
+  const CACHE_TTL = 10 * 60 * 1000; // cache 10 นาที
 
-  function showError(title, detail, hint) {
+  function renderDirs(dirs) {
     removeSkeleton();
-    document.getElementById("countBadge").textContent = "เกิดข้อผิดพลาด";
+    const list = document.getElementById("list");
+
+    if (dirs.length === 0) {
+      list.innerHTML = `<div class="empty-state"><i class="bi bi-folder-x d-block"></i><p>ไม่พบโฟลเดอร์ใน repository</p></div>`;
+      document.getElementById("countBadge").textContent = "0 เว็บไซต์";
+      return;
+    }
+
+    dirs.forEach((item, i) => {
+      const a = document.createElement("a");
+      a.className = "site-card";
+      a.href = `https://${user}.github.io/${repo}/${item.name}/`;
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      a.dataset.name = item.name;
+      a.style.animationDelay = `${i * 60}ms`;
+      a.innerHTML = `
+        <div class="card-top"></div>
+        <div class="card-body-inner">
+          <div class="card-icon-wrap"><i class="bi ${randomIcon()}"></i></div>
+          <div class="card-name">${item.name}</div>
+          <div class="card-meta">
+            <i class="bi bi-link-45deg"></i>
+            ${user}.github.io/${repo}/${item.name}/
+          </div>
+        </div>
+        <div class="card-footer-inner">
+          <span class="open-label">เปิดเว็บไซต์</span>
+          <span class="arrow-icon"><i class="bi bi-arrow-right"></i></span>
+        </div>`;
+      list.appendChild(a);
+      allCards.push(a);
+    });
+    updateCount(dirs.length, dirs.length);
+  }
+
+  function showRateLimit(resetEpoch) {
+    removeSkeleton();
+    document.getElementById("countBadge").textContent = "Rate Limited";
+    let resetStr = '';
+    if (resetEpoch) {
+      const d = new Date(resetEpoch * 1000);
+      resetStr = `<div class="error-hint"><i class="bi bi-clock"></i> API จะพร้อมใหม่เวลา <strong>${d.toLocaleTimeString('th-TH')}</strong></div>`;
+    }
     document.getElementById("list").innerHTML = `
       <div class="error-box">
-        <div class="error-icon"><i class="bi bi-exclamation-triangle-fill"></i></div>
+        <div class="error-icon"><i class="bi bi-hourglass-split"></i></div>
         <div class="error-content">
-          <div class="error-title">${title}</div>
-          <div class="error-detail">${detail}</div>
-          ${hint ? `<div class="error-hint"><i class="bi bi-lightbulb"></i> ${hint}</div>` : ''}
-          <div class="error-url">
-            <i class="bi bi-link"></i>
-            <a href="${apiUrl}" target="_blank">${apiUrl}</a>
+          <div class="error-title" style="color:#b45309">GitHub API Rate Limit (60 req/hr)</div>
+          <div class="error-detail">IP ของคุณเรียก API ครบ 60 ครั้ง/ชั่วโมงแล้ว — เป็นเรื่องปกติเมื่อทดสอบบ่อยๆ</div>
+          ${resetStr}
+          <div class="error-hint" style="background:#eff6ff;color:#1e40af">
+            <i class="bi bi-shield-lock"></i>
+            <span>วิธีแก้ถาวร: ใส่ <strong>GitHub Token</strong> ในโค้ดด้านบน<br>
+            สร้างได้ที่ github.com → Settings → Developer settings → Personal access tokens</span>
           </div>
-          <button class="retry-btn" onclick="location.reload()">
-            <i class="bi bi-arrow-clockwise"></i> ลองใหม่อีกครั้ง
+          <button class="retry-btn" onclick="loadFromAPI(true)">
+            <i class="bi bi-arrow-clockwise"></i> ลองใหม่
           </button>
         </div>
       </div>`;
   }
 
-  fetch(apiUrl)
-    .then(res => {
-      if (res.status === 404) {
-        showError(
-          'ไม่พบ Repository',
-          `ไม่พบ <code>${user}/${repo}</code> — อาจเป็น Private หรือชื่อสะกดผิด`,
-          'ตรวจสอบว่า Repository เป็น Public และชื่อถูกต้อง'
-        );
-        throw new Error('stop');
-      }
-      if (res.status === 403) {
-        showError(
-          'GitHub API Rate Limit',
-          'คำขอถูกจำกัด (60 req/hr สำหรับ IP ที่ไม่ได้ login)',
-          'รอสักครู่แล้วลองใหม่ หรือเปิดหน้านี้ใน GitHub Pages โดยตรง'
-        );
-        throw new Error('stop');
-      }
-      if (!res.ok) {
-        showError('เกิดข้อผิดพลาด', `HTTP ${res.status} ${res.statusText}`, '');
-        throw new Error('stop');
-      }
-      return res.json();
-    })
-    .then(data => {
-      if (!data) return;
-      removeSkeleton();
-      const list = document.getElementById("list");
-      const dirs = data.filter(item => item.type === "dir");
+  function loadFromAPI(force = false) {
+    // ดึงจาก cache ก่อนถ้ายังไม่หมดอายุ
+    if (!force) {
+      try {
+        const cached = JSON.parse(localStorage.getItem(CACHE_KEY));
+        if (cached && Date.now() - cached.ts < CACHE_TTL) {
+          renderDirs(cached.dirs);
+          const ageMin = Math.floor((Date.now() - cached.ts) / 60000);
+          document.getElementById("countBadge").textContent += ` (cache ${ageMin}m)`;
+          return;
+        }
+      } catch(e) {}
+    }
 
-      if (dirs.length === 0) {
-        list.innerHTML = `<div class="empty-state"><i class="bi bi-folder-x d-block"></i><p>ไม่พบโฟลเดอร์ใน repository</p></div>`;
-        document.getElementById("countBadge").textContent = "0 เว็บไซต์";
-        return;
-      }
-
-      dirs.forEach((item, i) => {
-        const a = document.createElement("a");
-        a.className = "site-card";
-        a.href = `https://${user}.github.io/${repo}/${item.name}/`;
-        a.target = "_blank";
-        a.rel = "noopener noreferrer";
-        a.dataset.name = item.name;
-        a.style.animationDelay = `${i * 60}ms`;
-        a.innerHTML = `
-          <div class="card-top"></div>
-          <div class="card-body-inner">
-            <div class="card-icon-wrap">
-              <i class="bi ${randomIcon()}"></i>
+    // เรียก API จริง
+    fetch(apiUrl)
+      .then(res => {
+        if (res.status === 403) {
+          const reset = res.headers.get('X-RateLimit-Reset');
+          showRateLimit(reset ? parseInt(reset) : null);
+          throw new Error('stop');
+        }
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      })
+      .then(data => {
+        const dirs = data.filter(item => item.type === "dir");
+        // บันทึก cache
+        try { localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), dirs })); } catch(e) {}
+        renderDirs(dirs);
+      })
+      .catch(err => {
+        if (err.message === 'stop') return;
+        removeSkeleton();
+        document.getElementById("list").innerHTML = `
+          <div class="error-box">
+            <div class="error-icon"><i class="bi bi-wifi-off"></i></div>
+            <div class="error-content">
+              <div class="error-title">ไม่สามารถเชื่อมต่อได้</div>
+              <div class="error-detail">${err.message}</div>
+              <button class="retry-btn" onclick="loadFromAPI(true)"><i class="bi bi-arrow-clockwise"></i> ลองใหม่</button>
             </div>
-            <div class="card-name">${item.name}</div>
-            <div class="card-meta">
-              <i class="bi bi-link-45deg"></i>
-              ${user}.github.io/${repo}/${item.name}/
-            </div>
-          </div>
-          <div class="card-footer-inner">
-            <span class="open-label">เปิดเว็บไซต์</span>
-            <span class="arrow-icon"><i class="bi bi-arrow-right"></i></span>
-          </div>
-        `;
-        list.appendChild(a);
-        allCards.push(a);
+          </div>`;
       });
+  }
 
-      updateCount(dirs.length, dirs.length);
-    })
-    .catch(err => {
-      if (err.message === 'stop') return;
-      showError(
-        'ไม่สามารถเชื่อมต่อได้',
-        `Network error: ${err.message}`,
-        'ตรวจสอบการเชื่อมต่ออินเทอร์เน็ต'
-      );
-    });
+  loadFromAPI();
 </script>
 </body>
 </html>
