@@ -2,552 +2,130 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
 <title>รวมเว็บไซต์</title>
-<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- Bootstrap -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
 <style>
-  :root {
-    --primary:     #1a56db;
-    --primary-light: #e8f0fe;
-    --primary-mid: #3b82f6;
-    --accent:      #0ea5e9;
-    --surface:     #ffffff;
-    --bg:          #f0f4f8;
-    --bg-deep:     #e2e8f0;
-    --text-main:   #1e293b;
-    --text-muted:  #64748b;
-    --border:      #cbd5e1;
-    --shadow-sm:   0 1px 3px rgba(30,41,59,.08), 0 1px 2px rgba(30,41,59,.06);
-    --shadow-md:   0 4px 16px rgba(30,41,59,.10), 0 2px 6px rgba(30,41,59,.07);
-    --shadow-lg:   0 10px 32px rgba(26,86,219,.13), 0 2px 8px rgba(26,86,219,.07);
-    --radius:      14px;
-    --transition:  all .22s cubic-bezier(.4,0,.2,1);
-  }
 
-  *, *::before, *::after { box-sizing: border-box; }
+body{
+    background: linear-gradient(135deg,#eef3f8,#dfe9f3);
+    font-family: "Segoe UI", Tahoma, sans-serif;
+    min-height:100vh;
+}
 
-  body {
-    font-family: 'IBM Plex Sans Thai', sans-serif;
-    background: var(--bg);
-    color: var(--text-main);
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
+.header{
+    margin-top:60px;
+    margin-bottom:40px;
+}
 
-  /* ── HEADER ── */
-  .site-header {
-    background: linear-gradient(135deg, #1e3a8a 0%, #1a56db 55%, #0ea5e9 100%);
-    padding: 56px 0 80px;
-    position: relative;
-    overflow: hidden;
-  }
-  .site-header::before {
-    content: '';
-    position: absolute; inset: 0;
-    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-  }
-  .site-header::after {
-    content: '';
-    position: absolute;
-    bottom: -2px; left: 0; right: 0;
-    height: 56px;
-    background: var(--bg);
-    clip-path: ellipse(55% 100% at 50% 100%);
-  }
-  .header-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: rgba(255,255,255,.15);
-    border: 1px solid rgba(255,255,255,.25);
-    color: #bfdbfe;
-    font-size: .72rem;
-    font-weight: 500;
-    letter-spacing: .08em;
-    text-transform: uppercase;
-    padding: 4px 14px;
-    border-radius: 999px;
-    margin-bottom: 18px;
-    backdrop-filter: blur(4px);
-  }
-  .site-header h1 {
-    font-size: clamp(1.8rem, 4vw, 2.8rem);
-    font-weight: 600;
-    color: #fff;
-    letter-spacing: -.01em;
-    margin-bottom: 10px;
-  }
-  .site-header p {
-    color: #bfdbfe;
-    font-size: 1rem;
-    font-weight: 300;
-    margin: 0;
-  }
+.header h1{
+    font-weight:700;
+    color:#2c3e50;
+}
 
-  /* ── MAIN CONTENT ── */
-  .main-wrap {
-    max-width: 960px;
-    margin: -28px auto 0;
-    padding: 0 16px 60px;
-    position: relative;
-    z-index: 10;
-  }
+.header p{
+    color:#6c757d;
+}
 
-  /* ── SEARCH / FILTER BAR ── */
-  .search-bar {
-    background: var(--surface);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow-md);
-    padding: 14px 20px;
-    margin-bottom: 28px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    border: 1px solid var(--border);
-  }
-  .search-bar i { color: var(--text-muted); font-size: 1.1rem; }
-  .search-bar input {
-    border: none; outline: none;
-    font-family: inherit;
-    font-size: .95rem;
-    color: var(--text-main);
-    background: transparent;
-    flex: 1;
-  }
-  .search-bar input::placeholder { color: var(--text-muted); }
-  .count-badge {
-    background: var(--primary-light);
-    color: var(--primary);
-    font-size: .75rem;
-    font-weight: 600;
-    padding: 3px 10px;
-    border-radius: 999px;
-    white-space: nowrap;
-  }
+.card-link{
+    transition:all .25s;
+    border:none;
+    border-radius:14px;
+    box-shadow:0 6px 18px rgba(0,0,0,0.08);
+}
 
-  /* ── GRID ── */
-  #list {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 18px;
-  }
+.card-link:hover{
+    transform:translateY(-5px);
+    box-shadow:0 10px 25px rgba(0,0,0,0.15);
+}
 
-  /* ── CARDS ── */
-  .site-card {
-    background: var(--surface);
-    border-radius: var(--radius);
-    border: 1px solid var(--border);
-    box-shadow: var(--shadow-sm);
-    transition: var(--transition);
-    overflow: hidden;
-    text-decoration: none;
-    display: flex;
-    flex-direction: column;
-    animation: fadeUp .4s ease both;
-  }
-  .site-card:hover {
-    box-shadow: var(--shadow-lg);
-    border-color: #93c5fd;
-    transform: translateY(-3px);
-    text-decoration: none;
-  }
-  .card-top {
-    height: 7px;
-    background: linear-gradient(90deg, var(--primary), var(--accent));
-    flex-shrink: 0;
-  }
-  .card-body-inner {
-    padding: 20px 20px 18px;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-  .card-icon-wrap {
-    width: 44px; height: 44px;
-    border-radius: 10px;
-    background: var(--primary-light);
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
-  }
-  .card-icon-wrap i {
-    font-size: 1.3rem;
-    color: var(--primary);
-  }
-  .card-name {
-    font-size: 1.05rem;
-    font-weight: 600;
-    color: var(--text-main);
-    word-break: break-all;
-    line-height: 1.3;
-    font-family: 'IBM Plex Mono', monospace;
-  }
-  .card-meta {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    color: var(--text-muted);
-    font-size: .78rem;
-  }
-  .card-meta i { font-size: .8rem; }
-  .card-footer-inner {
-    padding: 10px 20px 14px;
-    border-top: 1px solid var(--bg-deep);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .open-label {
-    font-size: .78rem;
-    font-weight: 500;
-    color: var(--primary);
-  }
-  .arrow-icon {
-    width: 28px; height: 28px;
-    border-radius: 50%;
-    background: var(--primary-light);
-    display: flex; align-items: center; justify-content: center;
-    color: var(--primary);
-    font-size: .85rem;
-    transition: var(--transition);
-  }
-  .site-card:hover .arrow-icon {
-    background: var(--primary);
-    color: #fff;
-    transform: translateX(3px);
-  }
+.card-body a{
+    text-decoration:none;
+    font-size:18px;
+    font-weight:600;
+    color:#0d6efd;
+}
 
-  /* ── SKELETON LOADER ── */
-  .skeleton {
-    background: var(--surface);
-    border-radius: var(--radius);
-    border: 1px solid var(--border);
-    overflow: hidden;
-  }
-  .skel-bar {
-    height: 7px;
-    background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
-    background-size: 200% 100%;
-    animation: shimmer 1.4s infinite;
-  }
-  .skel-body { padding: 20px; display: flex; flex-direction: column; gap: 12px; }
-  .skel-circle {
-    width: 44px; height: 44px; border-radius: 10px;
-    background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
-    background-size: 200% 100%;
-    animation: shimmer 1.4s infinite;
-  }
-  .skel-line {
-    height: 14px; border-radius: 6px;
-    background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
-    background-size: 200% 100%;
-    animation: shimmer 1.4s infinite;
-  }
+.card-body a:hover{
+    color:#084298;
+}
 
-  /* ── ERROR BOX ── */
-  .error-box {
-    grid-column: 1/-1;
-    background: var(--surface);
-    border: 1px solid #fca5a5;
-    border-left: 4px solid #ef4444;
-    border-radius: var(--radius);
-    padding: 28px 28px 24px;
-    display: flex;
-    gap: 20px;
-    align-items: flex-start;
-  }
-  .error-icon { font-size: 1.8rem; color: #ef4444; flex-shrink: 0; padding-top: 2px; }
-  .error-content { flex: 1; }
-  .error-title { font-weight: 600; font-size: 1.05rem; color: #b91c1c; margin-bottom: 6px; }
-  .error-detail { font-size: .88rem; color: var(--text-muted); margin-bottom: 8px; }
-  .error-detail code { background: #fee2e2; color: #b91c1c; padding: 1px 6px; border-radius: 4px; font-size: .83rem; }
-  .error-hint { font-size: .83rem; color: #92400e; background: #fef3c7; border-radius: 6px; padding: 6px 10px; margin-bottom: 10px; display: flex; gap: 6px; align-items: flex-start; }
-  .error-url { font-size: .78rem; color: var(--text-muted); margin-bottom: 14px; display: flex; gap: 5px; align-items: center; word-break: break-all; }
-  .error-url a { color: var(--primary); text-decoration: none; }
-  .error-url a:hover { text-decoration: underline; }
-  .retry-btn {
-    display: inline-flex; align-items: center; gap: 7px;
-    background: var(--primary); color: #fff;
-    border: none; border-radius: 8px;
-    padding: 8px 18px; font-size: .88rem; font-weight: 500;
-    font-family: inherit; cursor: pointer;
-    transition: var(--transition);
-  }
-  .retry-btn:hover { background: #1e40af; }
+.icon{
+    font-size:30px;
+    margin-bottom:10px;
+    color:#0d6efd;
+}
 
-  /* ── EMPTY STATE ── */
-  .empty-state {
-    grid-column: 1/-1;
-    text-align: center;
-    padding: 60px 20px;
-    color: var(--text-muted);
-  }
-  .empty-state i { font-size: 3rem; margin-bottom: 14px; opacity: .4; }
+footer{
+    margin-top:60px;
+    padding:20px;
+    color:#6c757d;
+    font-size:14px;
+}
 
-  /* ── FOOTER ── */
-  .site-footer {
-    text-align: center;
-    padding: 24px;
-    font-size: .8rem;
-    color: var(--text-muted);
-    border-top: 1px solid var(--border);
-    background: var(--surface);
-  }
-
-  /* ── ANIMATIONS ── */
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(18px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-  @keyframes shimmer {
-    0%   { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
-  }
-
-  /* ── RESPONSIVE ── */
-  @media (max-width: 576px) {
-    .site-header { padding: 40px 0 70px; }
-    #list { grid-template-columns: 1fr 1fr; gap: 12px; }
-    .card-body-inner { padding: 14px 14px 12px; }
-    .card-footer-inner { padding: 8px 14px 12px; }
-  }
-  @media (max-width: 380px) {
-    #list { grid-template-columns: 1fr; }
-  }
 </style>
+
 </head>
+
 <body>
 
-<!-- HEADER -->
-<header class="site-header text-center">
-  <div class="container">
-    <div class="header-badge">
-      <i class="bi bi-grid-3x3-gap-fill"></i>
-      Web Directory
+<div class="container">
+
+    <div class="text-center header">
+        <h1>ยินดีต้อนรับ</h1>
+        <p>รวมเว็บไซต์ในโฟลเดอร์ต่าง ๆ</p>
     </div>
-    <h1>ยินดีต้อนรับ</h1>
-    <p>รวมเว็บไซต์ในโฟลเดอร์ต่าง ๆ</p>
-  </div>
-</header>
 
-<!-- MAIN -->
-<main class="main-wrap">
+    <div class="row g-4" id="list"></div>
 
-  <!-- Search bar -->
-  <div class="search-bar">
-    <i class="bi bi-search"></i>
-    <input type="text" id="searchInput" placeholder="ค้นหาเว็บไซต์..." oninput="filterCards()">
-    <span class="count-badge" id="countBadge">กำลังโหลด…</span>
-  </div>
+</div>
 
-  <!-- Card grid -->
-  <div id="list">
-    <!-- Skeleton loaders -->
-    <div class="skeleton" id="skel1">
-      <div class="skel-bar"></div>
-      <div class="skel-body">
-        <div class="skel-circle"></div>
-        <div class="skel-line" style="width:70%"></div>
-        <div class="skel-line" style="width:45%"></div>
-      </div>
-    </div>
-    <div class="skeleton" id="skel2">
-      <div class="skel-bar"></div>
-      <div class="skel-body">
-        <div class="skel-circle"></div>
-        <div class="skel-line" style="width:60%"></div>
-        <div class="skel-line" style="width:40%"></div>
-      </div>
-    </div>
-    <div class="skeleton" id="skel3">
-      <div class="skel-bar"></div>
-      <div class="skel-body">
-        <div class="skel-circle"></div>
-        <div class="skel-line" style="width:80%"></div>
-        <div class="skel-line" style="width:50%"></div>
-      </div>
-    </div>
-  </div>
-
-</main>
-
-<!-- FOOTER -->
-<footer class="site-footer">
-  <span>chummak / web &nbsp;·&nbsp; GitHub Pages Directory</span>
+<footer class="text-center">
+เว็บไซต์สร้างด้วย GitHub Pages
 </footer>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
 <script>
-  const user = "chummak";
-  const repo = "web";
-  let allCards = [];
 
-  const folderIcons = ["bi-folder2-open","bi-window","bi-layout-text-window","bi-file-earmark-code","bi-browser-chrome","bi-display"];
+const user = "chummak"
+const repo = "web"
 
-  function randomIcon() {
-    return folderIcons[Math.floor(Math.random() * folderIcons.length)];
-  }
+fetch(`https://api.github.com/repos/${user}/${repo}/contents/`)
+.then(res => res.json())
+.then(data => {
 
-  function removeSkeleton() {
-    ["skel1","skel2","skel3"].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.remove();
-    });
-  }
+    const list = document.getElementById("list")
 
-  function updateCount(visible, total) {
-    const badge = document.getElementById("countBadge");
-    badge.textContent = visible === total
-      ? `${total} เว็บไซต์`
-      : `${visible} / ${total}`;
-  }
+    data.forEach(item => {
 
-  function filterCards() {
-    const q = document.getElementById("searchInput").value.toLowerCase().trim();
-    let visible = 0;
-    const list = document.getElementById("list");
+        if(item.type === "dir"){
 
-    // Remove empty state if exists
-    const empty = document.getElementById("emptyState");
-    if (empty) empty.remove();
+            const div = document.createElement("div")
+            div.className = "col-12 col-sm-6 col-md-4 col-lg-3"
 
-    allCards.forEach(card => {
-      const name = card.dataset.name.toLowerCase();
-      const show = !q || name.includes(q);
-      card.style.display = show ? "" : "none";
-      if (show) visible++;
-    });
-
-    updateCount(visible, allCards.length);
-
-    if (visible === 0 && allCards.length > 0) {
-      const div = document.createElement("div");
-      div.id = "emptyState";
-      div.className = "empty-state";
-      div.innerHTML = `<i class="bi bi-search d-block"></i><p>ไม่พบเว็บไซต์ที่ตรงกับ "<strong>${q}</strong>"</p>`;
-      list.appendChild(div);
-    }
-  }
-
-  const apiUrl = `https://api.github.com/repos/${user}/${repo}/contents/`;
-  const CACHE_KEY = `gh_dirs_${user}_${repo}`;
-  const CACHE_TTL = 10 * 60 * 1000; // cache 10 นาที
-
-  function renderDirs(dirs) {
-    removeSkeleton();
-    const list = document.getElementById("list");
-
-    if (dirs.length === 0) {
-      list.innerHTML = `<div class="empty-state"><i class="bi bi-folder-x d-block"></i><p>ไม่พบโฟลเดอร์ใน repository</p></div>`;
-      document.getElementById("countBadge").textContent = "0 เว็บไซต์";
-      return;
-    }
-
-    dirs.forEach((item, i) => {
-      const a = document.createElement("a");
-      a.className = "site-card";
-      a.href = `https://${user}.github.io/${repo}/${item.name}/`;
-      a.target = "_blank";
-      a.rel = "noopener noreferrer";
-      a.dataset.name = item.name;
-      a.style.animationDelay = `${i * 60}ms`;
-      a.innerHTML = `
-        <div class="card-top"></div>
-        <div class="card-body-inner">
-          <div class="card-icon-wrap"><i class="bi ${randomIcon()}"></i></div>
-          <div class="card-name">${item.name}</div>
-          <div class="card-meta">
-            <i class="bi bi-link-45deg"></i>
-            ${user}.github.io/${repo}/${item.name}/
-          </div>
-        </div>
-        <div class="card-footer-inner">
-          <span class="open-label">เปิดเว็บไซต์</span>
-          <span class="arrow-icon"><i class="bi bi-arrow-right"></i></span>
-        </div>`;
-      list.appendChild(a);
-      allCards.push(a);
-    });
-    updateCount(dirs.length, dirs.length);
-  }
-
-  function showRateLimit(resetEpoch) {
-    removeSkeleton();
-    document.getElementById("countBadge").textContent = "Rate Limited";
-    let resetStr = '';
-    if (resetEpoch) {
-      const d = new Date(resetEpoch * 1000);
-      resetStr = `<div class="error-hint"><i class="bi bi-clock"></i> API จะพร้อมใหม่เวลา <strong>${d.toLocaleTimeString('th-TH')}</strong></div>`;
-    }
-    document.getElementById("list").innerHTML = `
-      <div class="error-box">
-        <div class="error-icon"><i class="bi bi-hourglass-split"></i></div>
-        <div class="error-content">
-          <div class="error-title" style="color:#b45309">GitHub API Rate Limit (60 req/hr)</div>
-          <div class="error-detail">IP ของคุณเรียก API ครบ 60 ครั้ง/ชั่วโมงแล้ว — เป็นเรื่องปกติเมื่อทดสอบบ่อยๆ</div>
-          ${resetStr}
-          <div class="error-hint" style="background:#eff6ff;color:#1e40af">
-            <i class="bi bi-shield-lock"></i>
-            <span>วิธีแก้ถาวร: ใส่ <strong>GitHub Token</strong> ในโค้ดด้านบน<br>
-            สร้างได้ที่ github.com → Settings → Developer settings → Personal access tokens</span>
-          </div>
-          <button class="retry-btn" onclick="loadFromAPI(true)">
-            <i class="bi bi-arrow-clockwise"></i> ลองใหม่
-          </button>
-        </div>
-      </div>`;
-  }
-
-  function loadFromAPI(force = false) {
-    // ดึงจาก cache ก่อนถ้ายังไม่หมดอายุ
-    if (!force) {
-      try {
-        const cached = JSON.parse(localStorage.getItem(CACHE_KEY));
-        if (cached && Date.now() - cached.ts < CACHE_TTL) {
-          renderDirs(cached.dirs);
-          const ageMin = Math.floor((Date.now() - cached.ts) / 60000);
-          document.getElementById("countBadge").textContent += ` (cache ${ageMin}m)`;
-          return;
-        }
-      } catch(e) {}
-    }
-
-    // เรียก API จริง
-    fetch(apiUrl)
-      .then(res => {
-        if (res.status === 403) {
-          const reset = res.headers.get('X-RateLimit-Reset');
-          showRateLimit(reset ? parseInt(reset) : null);
-          throw new Error('stop');
-        }
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return res.json();
-      })
-      .then(data => {
-        const dirs = data.filter(item => item.type === "dir");
-        // บันทึก cache
-        try { localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), dirs })); } catch(e) {}
-        renderDirs(dirs);
-      })
-      .catch(err => {
-        if (err.message === 'stop') return;
-        removeSkeleton();
-        document.getElementById("list").innerHTML = `
-          <div class="error-box">
-            <div class="error-icon"><i class="bi bi-wifi-off"></i></div>
-            <div class="error-content">
-              <div class="error-title">ไม่สามารถเชื่อมต่อได้</div>
-              <div class="error-detail">${err.message}</div>
-              <button class="retry-btn" onclick="loadFromAPI(true)"><i class="bi bi-arrow-clockwise"></i> ลองใหม่</button>
+            div.innerHTML = `
+            <div class="card card-link h-100 text-center">
+                <div class="card-body">
+                    <div class="icon">🌐</div>
+                    <a href="https://${user}.github.io/${repo}/${item.name}/" target="_blank">
+                        ${item.name}
+                    </a>
+                </div>
             </div>
-          </div>`;
-      });
-  }
+            `
 
-  loadFromAPI();
+            list.appendChild(div)
+
+        }
+
+    })
+
+})
+
 </script>
+
 </body>
 </html>
