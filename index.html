@@ -1,263 +1,601 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ร้านติดฟิล์มรถยนต์ยอดนิยมในสุรินทร์</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ร้านติดฟิล์มรถยนต์ยอดนิยมในสุรินทร์</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary:    #1a56a0;
+            --primary-light: #2a72cc;
+            --primary-dark: #0e3a70;
+            --accent:     #3da8d8;
+            --surface:    #f0f5fc;
+            --surface-2:  #e4edf8;
+            --text:       #1c2b3a;
+            --text-muted: #5a7291;
+            --border:     #c9daf0;
+            --white:      #ffffff;
+            --gold:       #e8a020;
+            --radius:     12px;
+            --shadow-sm:  0 2px 8px rgba(26,86,160,.08);
+            --shadow-md:  0 6px 24px rgba(26,86,160,.13);
+            --shadow-lg:  0 16px 48px rgba(26,86,160,.18);
+        }
 
-<style>
+        *, *::before, *::after { box-sizing: border-box; }
 
-body{
-    background:#eef2f7;
-    font-family:Tahoma, sans-serif;
-}
+        body {
+            background: var(--surface);
+            font-family: 'Sarabun', sans-serif;
+            color: var(--text);
+            min-height: 100vh;
+        }
 
-/* Navbar */
-.navbar{
-    background:#0d6efd;
-}
+        /* ─── HERO ─── */
+        .hero {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 50%, var(--primary-light) 100%);
+            color: var(--white);
+            padding: 56px 24px 48px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Ccircle cx='30' cy='30' r='20'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: -2px; left: 0; right: 0;
+            height: 48px;
+            background: var(--surface);
+            clip-path: ellipse(55% 100% at 50% 100%);
+        }
+        .hero-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 72px; height: 72px;
+            border-radius: 50%;
+            background: rgba(255,255,255,.15);
+            backdrop-filter: blur(8px);
+            border: 2px solid rgba(255,255,255,.25);
+            font-size: 2rem;
+            margin-bottom: 20px;
+            animation: pulse-ring 2.5s ease-in-out infinite;
+        }
+        @keyframes pulse-ring {
+            0%,100% { box-shadow: 0 0 0 0 rgba(255,255,255,.3); }
+            50%      { box-shadow: 0 0 0 14px rgba(255,255,255,.0); }
+        }
+        .hero h1 {
+            font-family: 'IBM Plex Sans Thai', sans-serif;
+            font-size: clamp(1.5rem, 4vw, 2.4rem);
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            margin-bottom: 8px;
+            position: relative;
+        }
+        .hero p {
+            font-size: 1.05rem;
+            opacity: .82;
+            position: relative;
+            margin-bottom: 0;
+        }
+        .hero-badge {
+            display: inline-block;
+            background: rgba(255,255,255,.18);
+            border: 1px solid rgba(255,255,255,.3);
+            border-radius: 999px;
+            padding: 4px 14px;
+            font-size: .8rem;
+            letter-spacing: .5px;
+            text-transform: uppercase;
+            margin-bottom: 14px;
+            position: relative;
+        }
 
-/* Header Hero */
-.hero{
-    background:linear-gradient(135deg,#0d6efd,#6c9cff);
-    color:white;
-    padding:50px 20px;
-    text-align:center;
-}
+        /* ─── LAYOUT ─── */
+        .main-wrap {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 16px 48px;
+        }
 
-/* Card */
-.card{
-    border:none;
-    border-radius:12px;
-    box-shadow:0 6px 20px rgba(0,0,0,0.08);
-}
+        /* ─── SECTION TITLE ─── */
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: 'IBM Plex Sans Thai', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: 20px;
+        }
+        .section-title .title-bar {
+            width: 4px; height: 22px;
+            background: linear-gradient(180deg, var(--primary-light), var(--accent));
+            border-radius: 4px;
+            flex-shrink: 0;
+        }
+        .section-title .badge-count {
+            margin-left: auto;
+            background: var(--surface-2);
+            color: var(--text-muted);
+            font-size: .75rem;
+            font-weight: 600;
+            padding: 3px 10px;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+        }
 
-/* Card Title */
-.card-title{
-    font-weight:bold;
-    color:#344767;
-}
+        /* ─── CARDS ─── */
+        .glass-card {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+            padding: 24px;
+            margin-bottom: 28px;
+            transition: box-shadow .25s;
+        }
+        .glass-card:hover { box-shadow: var(--shadow-md); }
 
-/* Table */
-.table thead{
-    background:#0d6efd;
-    color:white;
-}
+        /* ─── RANK TABLE ─── */
+        .rank-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 8px;
+        }
+        .rank-table thead tr th {
+            background: var(--primary);
+            color: var(--white);
+            font-weight: 600;
+            font-size: .85rem;
+            letter-spacing: .4px;
+            padding: 11px 16px;
+            border: none;
+        }
+        .rank-table thead tr th:first-child { border-radius: var(--radius) 0 0 var(--radius); }
+        .rank-table thead tr th:last-child  { border-radius: 0 var(--radius) var(--radius) 0; }
+        .rank-table tbody tr td {
+            background: var(--white);
+            padding: 13px 16px;
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
+            font-size: .93rem;
+            transition: background .2s;
+        }
+        .rank-table tbody tr td:first-child {
+            border-left: 1px solid var(--border);
+            border-radius: var(--radius) 0 0 var(--radius);
+        }
+        .rank-table tbody tr td:last-child {
+            border-right: 1px solid var(--border);
+            border-radius: 0 var(--radius) var(--radius) 0;
+        }
+        .rank-table tbody tr:hover td { background: var(--surface); }
 
-.table-hover tbody tr:hover{
-    background:#f1f6ff;
-}
+        .rank-medal {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 34px; height: 34px;
+            border-radius: 50%;
+            font-weight: 700;
+            font-size: .9rem;
+            flex-shrink: 0;
+        }
+        .rank-1 { background: linear-gradient(135deg,#ffd700,#ffb300); color: #7a4a00; box-shadow: 0 2px 8px rgba(255,180,0,.35); }
+        .rank-2 { background: linear-gradient(135deg,#e0e8f0,#b0c4de); color: #3a4a5a; }
+        .rank-3 { background: linear-gradient(135deg,#f4c490,#cd7f32); color: #6b3400; }
+        .rank-4, .rank-5 { background: var(--surface-2); color: var(--text-muted); border: 1px solid var(--border); }
 
-/* Buttons */
-.btn{
-    border-radius:8px;
-    font-size:14px;
-}
+        .shop-name-cell { font-weight: 600; color: var(--primary-dark); }
+        .reason-badge {
+            display: inline-block;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 3px 10px;
+            font-size: .8rem;
+            color: var(--text-muted);
+        }
 
-/* Footer */
-.footer{
-    text-align:center;
-    padding:20px;
-    color:#6c757d;
-    font-size:14px;
-}
+        /* ─── DETAIL TABLE ─── */
+        .detail-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .detail-table thead tr th {
+            background: var(--primary);
+            color: var(--white);
+            font-size: .82rem;
+            font-weight: 600;
+            letter-spacing: .3px;
+            padding: 12px 14px;
+            border: none;
+            white-space: nowrap;
+        }
+        .detail-table thead tr th:first-child { border-radius: var(--radius) 0 0 0; }
+        .detail-table thead tr th:last-child  { border-radius: 0 var(--radius) 0 0; }
+        .detail-table tbody tr td {
+            padding: 14px 14px;
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
+            font-size: .88rem;
+            line-height: 1.5;
+        }
+        .detail-table tbody tr:last-child td { border-bottom: none; }
+        .detail-table tbody tr:nth-child(even) td { background: var(--surface); }
+        .detail-table tbody tr:hover td { background: var(--surface-2); }
 
-/* Mobile */
-@media(max-width:768px){
+        .rank-num {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px; height: 28px;
+            border-radius: 50%;
+            font-size: .8rem;
+            font-weight: 700;
+        }
 
-.hero h1{
-    font-size:22px;
-}
+        .phone-link {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+        .phone-link:hover { color: var(--primary-dark); text-decoration: underline; }
+        .phone-line { display: block; font-size: .82rem; }
 
-.hero p{
-    font-size:14px;
-}
+        /* ─── BUTTONS ─── */
+        .btn-fb   { background:#1877f2; color:#fff; border:none; }
+        .btn-fb:hover { background:#0d65d4; color:#fff; }
+        .btn-line { background:#00b300; color:#fff; border:none; }
+        .btn-line:hover { background:#009900; color:#fff; }
+        .btn-web  { background:#1c2b3a; color:#fff; border:none; }
+        .btn-web:hover { background:#0a1420; color:#fff; }
+        .btn-map  { background:var(--accent); color:#fff; border:none; }
+        .btn-map:hover { background:#2090c0; color:#fff; }
+        .btn-info { background: var(--primary-light); color:#fff; border:none; }
+        .btn-info:hover { background:var(--primary); color:#fff; }
 
-}
+        .action-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 12px;
+            border-radius: 8px;
+            font-size: .78rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: transform .15s, opacity .15s;
+            white-space: nowrap;
+            margin: 2px;
+        }
+        .action-btn:hover { transform: translateY(-1px); opacity: .92; }
 
-</style>
+        /* ─── MOBILE CARDS ─── */
+        .shop-mobile-card {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 18px;
+            margin-bottom: 14px;
+            box-shadow: var(--shadow-sm);
+            position: relative;
+            overflow: hidden;
+            transition: box-shadow .25s;
+        }
+        .shop-mobile-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 4px; height: 100%;
+            background: linear-gradient(180deg, var(--primary-light), var(--accent));
+        }
+        .shop-mobile-card:hover { box-shadow: var(--shadow-md); }
+        .shop-mobile-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+        .shop-mobile-name {
+            font-weight: 700;
+            color: var(--primary-dark);
+            font-size: 1rem;
+            line-height: 1.3;
+        }
+        .shop-mobile-field {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            font-size: .84rem;
+            color: var(--text);
+            margin-bottom: 6px;
+        }
+        .shop-mobile-field i { color: var(--accent); flex-shrink: 0; margin-top: 2px; font-size: .85rem; }
+        .shop-mobile-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            margin-top: 12px;
+            padding-top: 10px;
+            border-top: 1px solid var(--border);
+        }
+
+        /* ─── RESPONSIVE VISIBILITY ─── */
+        @media (max-width: 767px) {
+            .desktop-table-wrap { display: none !important; }
+            .mobile-cards-wrap  { display: block !important; }
+        }
+        @media (min-width: 768px) {
+            .desktop-table-wrap { display: block !important; }
+            .mobile-cards-wrap  { display: none !important; }
+        }
+
+        /* ─── FOOTER ─── */
+        .footer {
+            text-align: center;
+            padding: 20px 16px;
+            color: var(--text-muted);
+            font-size: .82rem;
+            border-top: 1px solid var(--border);
+            background: var(--white);
+        }
+        .footer i { color: var(--accent); }
+
+        /* ─── FADE IN ─── */
+        .fade-up {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeUp .5s ease forwards;
+        }
+        .fade-up:nth-child(1) { animation-delay: .1s; }
+        .fade-up:nth-child(2) { animation-delay: .22s; }
+        @keyframes fadeUp {
+            to { opacity:1; transform:translateY(0); }
+        }
+    </style>
 </head>
-
 <body>
 
-<!-- Navbar -->
-<nav class="navbar navbar-dark">
-<div class="container">
-<span class="navbar-brand mb-0 h1">ร้านติดฟิล์มรถยนต์สุรินทร์</span>
-</div>
-</nav>
+    <!-- HERO -->
+    <div class="hero">
+        <div class="hero-icon"><i class="bi bi-car-front-fill"></i></div>
+        <div class="hero-badge"><i class="bi bi-geo-alt-fill me-1"></i>จังหวัดสุรินทร์</div>
+        <h1>ร้านติดฟิล์มรถยนต์ยอดนิยม</h1>
+        <p>รวมร้านติดฟิล์มรถยนต์คุณภาพในตัวเมืองจังหวัดสุรินทร์</p>
+    </div>
 
-<!-- Header -->
-<div class="hero">
-<h1>ร้านติดฟิล์มรถยนต์ยอดนิยม</h1>
-<p>ในตัวเมืองจังหวัดสุรินทร์</p>
-</div>
+    <div class="main-wrap mt-4">
 
-<div class="container mt-4">
+        <!-- RANKING CARD -->
+        <div class="glass-card fade-up">
+            <div class="section-title">
+                <span class="title-bar"></span>
+                <i class="bi bi-trophy-fill text-warning"></i>
+                การจัดอันดับความนิยม
+                <span class="badge-count">รีวิว + จำนวนลูกค้า</span>
+            </div>
+            <div class="table-responsive">
+                <table class="rank-table">
+                    <thead>
+                        <tr>
+                            <th style="width:80px">ลำดับ</th>
+                            <th>ชื่อร้าน</th>
+                            <th>เหตุผล</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="rank-medal rank-1">1</span></td>
+                            <td class="shop-name-cell">UD Auto Glass</td>
+                            <td><span class="reason-badge"><i class="bi bi-star-fill text-warning me-1"></i>รีวิวเยอะที่สุดในสุรินทร์</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="rank-medal rank-2">2</span></td>
+                            <td class="shop-name-cell">นันออโต้แอร์</td>
+                            <td><span class="reason-badge"><i class="bi bi-patch-check-fill text-primary me-1"></i>ร้านเก่า ตัวแทน Lamina</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="rank-medal rank-3">3</span></td>
+                            <td class="shop-name-cell">Supremo</td>
+                            <td><span class="reason-badge"><i class="bi bi-hand-thumbs-up-fill text-success me-1"></i>รีวิวคุณภาพงานดี</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="rank-medal rank-4">4</span></td>
+                            <td class="shop-name-cell">MR.MON828</td>
+                            <td><span class="reason-badge"><i class="bi bi-film me-1"></i>ร้านเฉพาะทางฟิล์ม</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="rank-medal rank-5">5</span></td>
+                            <td class="shop-name-cell">Surin Auto</td>
+                            <td><span class="reason-badge"><i class="bi bi-tools me-1"></i>ร้านอุปกรณ์รถยนต์</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
 
-<!-- ตารางความนิยม -->
-<div class="card mb-4">
-<div class="card-body">
+        <!-- DETAIL CARD -->
+        <div class="glass-card fade-up">
+            <div class="section-title">
+                <span class="title-bar"></span>
+                <i class="bi bi-info-circle-fill" style="color:var(--accent)"></i>
+                ข้อมูลร้านและช่องทางติดต่อ
+                <span class="badge-count">5 ร้าน</span>
+            </div>
 
-<h4 class="card-title mb-3">การจัดอันดับความนิยม (รีวิว + จำนวนลูกค้า)</h4>
+            <!-- DESKTOP TABLE -->
+            <div class="table-responsive desktop-table-wrap">
+                <table class="detail-table">
+                    <thead>
+                        <tr>
+                            <th style="width:58px">ลำดับ</th>
+                            <th>ชื่อร้าน</th>
+                            <th>ที่อยู่</th>
+                            <th>โทรศัพท์</th>
+                            <th>ติดต่อออนไลน์</th>
+                            <th>แผนที่ / รายละเอียด</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="rank-num rank-1">1</span></td>
+                            <td><strong class="d-block" style="color:var(--primary-dark)">UD Auto Glass</strong><small class="text-muted">สุรินทร์</small></td>
+                            <td>618 หมู่ 9 ถนนสุรินทร์-สังขะ ต.นอกเมือง อ.เมืองสุรินทร์</td>
+                            <td><a href="tel:044512708" class="phone-link"><i class="bi bi-telephone-fill me-1"></i>044-512-708</a></td>
+                            <td><a href="https://www.facebook.com/Udautoglass.surin/" target="_blank" class="action-btn btn-fb"><i class="bi bi-facebook"></i>Facebook</a></td>
+                            <td><a href="https://www.yellowpages.co.th/profile/UD-AUTO-GLASS-%E0%B8%AA%E0%B8%B8%E0%B8%A3%E0%B8%B4%E0%B8%99%E0%B8%97%E0%B8%A3%E0%B9%8C-dULU8m5JR" target="_blank" class="action-btn btn-map"><i class="bi bi-map"></i>ดูแผนที่</a></td>
+                        </tr>
+                        <tr>
+                            <td><span class="rank-num rank-2">2</span></td>
+                            <td><strong class="d-block" style="color:var(--primary-dark)">นันออโต้แอร์</strong><small class="text-muted">ตัวแทน Lamina</small></td>
+                            <td>21/75-76 ถนนหลักเมือง ต.ในเมือง อ.เมืองสุรินทร์</td>
+                            <td>
+                                <a href="tel:044512605" class="phone-link phone-line"><i class="bi bi-telephone-fill me-1"></i>044-512-605</a>
+                                <a href="tel:0908181556" class="phone-link phone-line"><i class="bi bi-telephone-fill me-1"></i>090-818-1556</a>
+                            </td>
+                            <td><a href="https://line.me/ti/p/@nanautoair" target="_blank" class="action-btn btn-line"><i class="bi bi-chat-fill"></i>LINE</a></td>
+                            <td><a href="https://www.laminafilms.com/en/dealer/736" target="_blank" class="action-btn btn-info"><i class="bi bi-info-circle"></i>รายละเอียด</a></td>
+                        </tr>
+                        <tr>
+                            <td><span class="rank-num rank-3">3</span></td>
+                            <td><strong class="d-block" style="color:var(--primary-dark)">Supremo Auto Salon</strong></td>
+                            <td>55/2 หมู่ 3 ถ.สุรินทร์-ลำชี ต.นอกเมือง อ.เมืองสุรินทร์</td>
+                            <td><span class="text-muted" style="font-size:.82rem"><i class="bi bi-chat-dots me-1"></i>ติดต่อผ่าน LINE</span></td>
+                            <td><a href="https://page.line.me/tng4472a" target="_blank" class="action-btn btn-line"><i class="bi bi-chat-fill"></i>LINE Official</a></td>
+                            <td><a href="https://page.line.me/tng4472a" target="_blank" class="action-btn btn-info"><i class="bi bi-info-circle"></i>ดูรายละเอียด</a></td>
+                        </tr>
+                        <tr>
+                            <td><span class="rank-num rank-4">4</span></td>
+                            <td><strong class="d-block" style="color:var(--primary-dark)">MR.MON828 AutoFilm</strong></td>
+                            <td>454-455 หมู่ 13 ต.นอกเมือง อ.เมืองสุรินทร์</td>
+                            <td><a href="tel:0985628299" class="phone-link"><i class="bi bi-telephone-fill me-1"></i>098-562-8299</a></td>
+                            <td><a href="https://www.mrmon828autofilm.com" target="_blank" class="action-btn btn-web"><i class="bi bi-globe"></i>Website</a></td>
+                            <td><a href="https://www.mrmon828autofilm.com/contact/" target="_blank" class="action-btn btn-info"><i class="bi bi-envelope"></i>ติดต่อร้าน</a></td>
+                        </tr>
+                        <tr>
+                            <td><span class="rank-num rank-5">5</span></td>
+                            <td><strong class="d-block" style="color:var(--primary-dark)">Surin Auto</strong></td>
+                            <td>ตัวเมืองสุรินทร์</td>
+                            <td>
+                                <a href="tel:0868667272" class="phone-link phone-line"><i class="bi bi-telephone-fill me-1"></i>086-866-7272</a>
+                                <a href="tel:0981012339" class="phone-link phone-line"><i class="bi bi-telephone-fill me-1"></i>098-101-2339</a>
+                            </td>
+                            <td><a href="https://www.facebook.com/surinauto" target="_blank" class="action-btn btn-fb"><i class="bi bi-facebook"></i>Facebook</a></td>
+                            <td><a href="https://surinauto.blogspot.com/" target="_blank" class="action-btn btn-info"><i class="bi bi-house"></i>ข้อมูลร้าน</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
 
-<div class="table-responsive">
+            <!-- MOBILE CARDS -->
+            <div class="mobile-cards-wrap" style="display:none">
 
-<table class="table table-bordered table-hover align-middle">
+                <div class="shop-mobile-card">
+                    <div class="shop-mobile-header">
+                        <span class="rank-medal rank-1">1</span>
+                        <div>
+                            <div class="shop-mobile-name">UD Auto Glass สุรินทร์</div>
+                            <small class="text-muted">รีวิวเยอะที่สุดในสุรินทร์</small>
+                        </div>
+                    </div>
+                    <div class="shop-mobile-field"><i class="bi bi-geo-alt-fill"></i><span>618 หมู่ 9 ถนนสุรินทร์-สังขะ ต.นอกเมือง อ.เมืองสุรินทร์</span></div>
+                    <div class="shop-mobile-field"><i class="bi bi-telephone-fill"></i><span>044-512-708</span></div>
+                    <div class="shop-mobile-actions">
+                        <a href="https://www.facebook.com/Udautoglass.surin/" target="_blank" class="action-btn btn-fb"><i class="bi bi-facebook"></i>Facebook</a>
+                        <a href="https://www.yellowpages.co.th/profile/UD-AUTO-GLASS-%E0%B8%AA%E0%B8%B8%E0%B8%A3%E0%B8%B4%E0%B8%99%E0%B8%97%E0%B8%A3%E0%B9%8C-dULU8m5JR" target="_blank" class="action-btn btn-map"><i class="bi bi-map"></i>ดูแผนที่</a>
+                    </div>
+                </div>
 
-<thead>
-<tr>
-<th width="80">ลำดับ</th>
-<th>ร้าน</th>
-<th>เหตุผล</th>
-</tr>
-</thead>
+                <div class="shop-mobile-card">
+                    <div class="shop-mobile-header">
+                        <span class="rank-medal rank-2">2</span>
+                        <div>
+                            <div class="shop-mobile-name">นันออโต้แอร์</div>
+                            <small class="text-muted">ร้านเก่า ตัวแทน Lamina</small>
+                        </div>
+                    </div>
+                    <div class="shop-mobile-field"><i class="bi bi-geo-alt-fill"></i><span>21/75-76 ถนนหลักเมือง ต.ในเมือง อ.เมืองสุรินทร์</span></div>
+                    <div class="shop-mobile-field"><i class="bi bi-telephone-fill"></i><span>044-512-605 / 090-818-1556</span></div>
+                    <div class="shop-mobile-actions">
+                        <a href="https://line.me/ti/p/@nanautoair" target="_blank" class="action-btn btn-line"><i class="bi bi-chat-fill"></i>LINE</a>
+                        <a href="https://www.laminafilms.com/en/dealer/736" target="_blank" class="action-btn btn-info"><i class="bi bi-info-circle"></i>รายละเอียด</a>
+                    </div>
+                </div>
 
-<tbody>
+                <div class="shop-mobile-card">
+                    <div class="shop-mobile-header">
+                        <span class="rank-medal rank-3">3</span>
+                        <div>
+                            <div class="shop-mobile-name">Supremo Auto Salon</div>
+                            <small class="text-muted">รีวิวคุณภาพงานดี</small>
+                        </div>
+                    </div>
+                    <div class="shop-mobile-field"><i class="bi bi-geo-alt-fill"></i><span>55/2 หมู่ 3 ถ.สุรินทร์-ลำชี ต.นอกเมือง อ.เมืองสุรินทร์</span></div>
+                    <div class="shop-mobile-field"><i class="bi bi-chat-dots-fill"></i><span>ติดต่อผ่าน LINE</span></div>
+                    <div class="shop-mobile-actions">
+                        <a href="https://page.line.me/tng4472a" target="_blank" class="action-btn btn-line"><i class="bi bi-chat-fill"></i>LINE Official</a>
+                        <a href="https://page.line.me/tng4472a" target="_blank" class="action-btn btn-info"><i class="bi bi-info-circle"></i>ดูรายละเอียด</a>
+                    </div>
+                </div>
 
-<tr>
-<td>1</td>
-<td>UD Auto Glass</td>
-<td>รีวิวเยอะที่สุดในสุรินทร์</td>
-</tr>
+                <div class="shop-mobile-card">
+                    <div class="shop-mobile-header">
+                        <span class="rank-medal rank-4">4</span>
+                        <div>
+                            <div class="shop-mobile-name">MR.MON828 AutoFilm</div>
+                            <small class="text-muted">ร้านเฉพาะทางฟิล์ม</small>
+                        </div>
+                    </div>
+                    <div class="shop-mobile-field"><i class="bi bi-geo-alt-fill"></i><span>454-455 หมู่ 13 ต.นอกเมือง อ.เมืองสุรินทร์</span></div>
+                    <div class="shop-mobile-field"><i class="bi bi-telephone-fill"></i><span>098-562-8299</span></div>
+                    <div class="shop-mobile-actions">
+                        <a href="https://www.mrmon828autofilm.com" target="_blank" class="action-btn btn-web"><i class="bi bi-globe"></i>Website</a>
+                        <a href="https://www.mrmon828autofilm.com/contact/" target="_blank" class="action-btn btn-info"><i class="bi bi-envelope"></i>ติดต่อร้าน</a>
+                    </div>
+                </div>
 
-<tr>
-<td>2</td>
-<td>นันออโต้แอร์</td>
-<td>ร้านเก่า ตัวแทน Lamina</td>
-</tr>
+                <div class="shop-mobile-card">
+                    <div class="shop-mobile-header">
+                        <span class="rank-medal rank-5">5</span>
+                        <div>
+                            <div class="shop-mobile-name">Surin Auto</div>
+                            <small class="text-muted">ร้านอุปกรณ์รถยนต์</small>
+                        </div>
+                    </div>
+                    <div class="shop-mobile-field"><i class="bi bi-geo-alt-fill"></i><span>ตัวเมืองสุรินทร์</span></div>
+                    <div class="shop-mobile-field"><i class="bi bi-telephone-fill"></i><span>086-866-7272 / 098-101-2339</span></div>
+                    <div class="shop-mobile-actions">
+                        <a href="https://www.facebook.com/surinauto" target="_blank" class="action-btn btn-fb"><i class="bi bi-facebook"></i>Facebook</a>
+                        <a href="https://surinauto.blogspot.com/" target="_blank" class="action-btn btn-info"><i class="bi bi-house"></i>ข้อมูลร้าน</a>
+                    </div>
+                </div>
 
-<tr>
-<td>3</td>
-<td>Supremo</td>
-<td>รีวิวคุณภาพงานดี</td>
-</tr>
+            </div><!-- /mobile-cards-wrap -->
+        </div><!-- /glass-card -->
 
-<tr>
-<td>4</td>
-<td>MR.MON828</td>
-<td>ร้านเฉพาะทางฟิล์ม</td>
-</tr>
+    </div><!-- /main-wrap -->
 
-<tr>
-<td>5</td>
-<td>Surin Auto</td>
-<td>ร้านอุปกรณ์รถยนต์</td>
-</tr>
+    <div class="footer">
+        <i class="bi bi-shield-check me-1"></i>
+        เว็บไซต์ข้อมูลร้านติดฟิล์มรถยนต์ในตัวเมืองสุรินทร์
+    </div>
 
-</tbody>
-</table>
-
-</div>
-</div>
-</div>
-
-
-<!-- ตารางข้อมูลร้าน -->
-
-<div class="card">
-<div class="card-body">
-
-<h4 class="card-title mb-3">ข้อมูลร้านและช่องทางติดต่อ</h4>
-
-<div class="table-responsive">
-
-<table class="table table-bordered table-striped align-middle">
-
-<thead>
-<tr>
-<th width="80">ลำดับ</th>
-<th>ชื่อร้าน</th>
-<th>ที่อยู่</th>
-<th>โทรศัพท์</th>
-<th width="150">ติดต่อออนไลน์</th>
-<th width="150">แผนที่ / รายละเอียด</th>
-</tr>
-</thead>
-
-<tbody>
-
-<tr>
-<td>1</td>
-<td>UD Auto Glass สุรินทร์</td>
-<td>618 หมู่ 9 ถนนสุรินทร์-สังขะ ต.นอกเมือง อ.เมืองสุรินทร์</td>
-<td>044-512-708</td>
-<td>
-<a href="https://www.facebook.com/Udautoglass.surin/" target="_blank" class="btn btn-primary btn-sm">Facebook</a>
-</td>
-<td>
-<a href="https://www.yellowpages.co.th/profile/UD-AUTO-GLASS-%E0%B8%AA%E0%B8%B8%E0%B8%A3%E0%B8%B4%E0%B8%99%E0%B8%97%E0%B8%A3%E0%B9%8C-dULU8m5JR" target="_blank" class="btn btn-success btn-sm">ดูแผนที่</a>
-</td>
-</tr>
-
-<tr>
-<td>2</td>
-<td>นันออโต้แอร์</td>
-<td>21/75-76 ถนนหลักเมือง ต.ในเมือง อ.เมืองสุรินทร์</td>
-<td>044-512-605 / 090-818-1556</td>
-<td>
-<a href="https://line.me/ti/p/@nanautoair" target="_blank" class="btn btn-success btn-sm">LINE</a>
-</td>
-<td>
-<a href="https://www.laminafilms.com/en/dealer/736" target="_blank" class="btn btn-info btn-sm">รายละเอียด</a>
-</td>
-</tr>
-
-<tr>
-<td>3</td>
-<td>Supremo Auto Salon</td>
-<td>55/2 หมู่ 3 ถ.สุรินทร์-ลำชี ต.นอกเมือง อ.เมืองสุรินทร์</td>
-<td>ติดต่อผ่าน LINE</td>
-<td>
-<a href="https://page.line.me/tng4472a" target="_blank" class="btn btn-success btn-sm">LINE Official</a>
-</td>
-<td>
-<a href="https://page.line.me/tng4472a" target="_blank" class="btn btn-info btn-sm">ดูรายละเอียด</a>
-</td>
-</tr>
-
-<tr>
-<td>4</td>
-<td>MR.MON828 AutoFilm</td>
-<td>454-455 หมู่ 13 ต.นอกเมือง อ.เมืองสุรินทร์</td>
-<td>098-562-8299</td>
-<td>
-<a href="https://www.mrmon828autofilm.com" target="_blank" class="btn btn-dark btn-sm">Website</a>
-</td>
-<td>
-<a href="https://www.mrmon828autofilm.com/contact/" target="_blank" class="btn btn-info btn-sm">ติดต่อร้าน</a>
-</td>
-</tr>
-
-<tr>
-<td>5</td>
-<td>Surin Auto</td>
-<td>ตัวเมืองสุรินทร์</td>
-<td>086-866-7272 / 098-101-2339</td>
-<td>
-<a href="https://www.facebook.com/surinauto" target="_blank" class="btn btn-primary btn-sm">Facebook</a>
-</td>
-<td>
-<a href="https://surinauto.blogspot.com/" target="_blank" class="btn btn-info btn-sm">ข้อมูลร้าน</a>
-</td>
-</tr>
-
-</tbody>
-
-</table>
-
-</div>
-</div>
-</div>
-
-</div>
-
-
-<div class="footer mt-4">
-เว็บไซต์ข้อมูลร้านติดฟิล์มรถยนต์ในตัวเมืองสุรินทร์
-</div>
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
