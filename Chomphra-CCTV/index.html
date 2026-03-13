@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ระบบกล้อง CCTV โรงพยาบาลจอมพระ</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --pri:        #1a6fa6;
+  --pri-dark:   #12547e;
+  --pri-light:  #4a9dc8;
+  --pri-xlight: #eaf5fb;
+  --accent:     #0ea5e9;
+  --ok:         #16a34a;
+  --ok-bg:      #f0fdf4;
+  --err:        #dc2626;
+  --err-bg:     #fff1f2;
+  --warn:       #d97706;
+  --n50:  #f8fafc;
+  --n100: #f1f5f9;
+  --n200: #e2e8f0;
+  --n300: #cbd5e1;
+  --n400: #94a3b8;
+  --n500: #64748b;
+  --n600: #475569;
+  --n700: #334155;
+  --n800: #1e293b;
+  --sh-sm: 0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.05);
+  --sh-md: 0 4px 12px rgba(0,0,0,.08),0 2px 4px rgba(0,0,0,.05);
+  --sh-lg: 0 10px 30px rgba(0,0,0,.1),0 4px 10px rgba(0,0,0,.06);
+  --r-sm: 6px; --r-md: 10px; --r-lg: 16px;
+}
+*,*::before,*::after{box-sizing:border-box;}
+html,body{margin:0;padding:0;height:100%;font-family:'Noto Sans Thai',sans-serif;background:var(--n100);color:var(--n700);}
+
+/* ── TOPBAR ── */
+.topbar{
+  position:sticky;top:0;z-index:1000;
+  background:#fff;border-bottom:1px solid var(--n200);
+  box-shadow:var(--sh-sm);
+}
+.tb-inner{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 20px;height:62px;max-width:1700px;margin:0 auto;gap:12px;
+}
+.brand{display:flex;align-items:center;gap:12px;min-width:0;}
+.brand-icon{
+  width:42px;height:42px;flex-shrink:0;
+  background:linear-gradient(135deg,var(--pri) 0%,var(--pri-light) 100%);
+  border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;
+  color:#fff;font-size:20px;
+  box-shadow:0 4px 12px rgba(26,111,166,.35);
+}
+.brand h1{font-size:16px;font-weight:700;color:var(--n800);margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.brand p{font-size:11px;color:var(--n400);margin:0;font-family:'IBM Plex Mono',monospace;letter-spacing:.6px;}
+.tb-badges{display:flex;gap:8px;flex-shrink:0;flex-wrap:wrap;justify-content:flex-end;}
+.sbadge{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:5px 12px;border-radius:20px;font-size:12px;font-weight:600;
+  white-space:nowrap;font-family:'IBM Plex Mono',monospace;
+}
+.sb-on {background:var(--ok-bg); color:var(--ok);  border:1px solid #bbf7d0;}
+.sb-off{background:#fff7ed;color:#c2410c;border:1px solid #fed7aa;}
+.sb-inf{background:var(--pri-xlight);color:var(--pri-dark);border:1px solid #bae6fd;}
+.ldot{width:7px;height:7px;border-radius:50%;animation:blink 1.4s ease-in-out infinite;}
+.ldot.g{background:var(--ok);}
+.ldot.r{background:var(--err);}
+.ldot.b{background:var(--accent);}
+.ldot.o{background:var(--warn);}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.3;}}
+
+/* ── LAYOUT ── */
+.page-body{display:flex;height:calc(100vh - 62px);overflow:hidden;}
+
+/* ── SIDEBAR ── */
+.sidebar{
+  width:268px;flex-shrink:0;
+  background:#fff;border-right:1px solid var(--n200);
+  overflow-y:auto;padding:16px 12px;
+  display:flex;flex-direction:column;gap:16px;
+}
+.sidebar::-webkit-scrollbar{width:5px;}
+.sidebar::-webkit-scrollbar-thumb{background:var(--n200);border-radius:3px;}
+.sec-title{
+  font-size:10px;font-weight:700;letter-spacing:1.5px;
+  text-transform:uppercase;color:var(--n400);
+  padding-bottom:7px;border-bottom:1px solid var(--n100);margin-bottom:4px;
+}
+.zcard{
+  background:var(--n50);border:1px solid var(--n200);border-radius:var(--r-md);
+  padding:10px 12px 10px 15px;cursor:pointer;
+  transition:all .18s ease;position:relative;overflow:hidden;
+}
+.zcard::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;
+  width:3px;border-radius:3px 0 0 3px;
+}
+.zcard.on::before{background:var(--ok);}
+.zcard.off::before{background:var(--warn);}
+.zcard:hover{border-color:var(--pri-light);background:var(--pri-xlight);box-shadow:var(--sh-sm);transform:translateX(2px);}
+.zcard-name{font-size:13px;font-weight:600;color:var(--n700);margin-bottom:3px;}
+.zcard-detail{font-size:11px;color:var(--n400);font-family:'IBM Plex Mono',monospace;}
+.zpill{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;margin-top:5px;}
+.p-on {background:#dcfce7;color:#15803d;}
+.p-off{background:#fff7ed;color:#c2410c;border:1px solid #fed7aa;}
+.leg-row{display:flex;align-items:center;gap:9px;font-size:12px;color:var(--n600);padding:2px 0;}
+.leg-box{width:14px;height:14px;border-radius:3px;flex-shrink:0;border:1.5px solid transparent;}
+.leg-ln{display:flex;align-items:center;width:24px;flex-shrink:0;}
+.sdivider{height:1px;background:var(--n100);}
+
+/* ── CANVAS ── */
+.canvas-wrap{
+  flex:1;position:relative;overflow:hidden;
+  background:var(--n100);
+}
+.canvas-wrap::before{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background-image:radial-gradient(circle,var(--n300) 1px,transparent 1px);
+  background-size:24px 24px;opacity:.5;z-index:0;
+}
+#mynetwork{width:100%;height:100%;position:relative;z-index:1;}
+
+/* ── TOOLBAR ── */
+.c-toolbar{position:absolute;top:14px;right:14px;display:flex;gap:6px;z-index:10;}
+.tb-btn{
+  padding:6px 13px;background:#fff;
+  border:1px solid var(--n200);border-radius:var(--r-sm);
+  font-size:12px;color:var(--n600);cursor:pointer;
+  box-shadow:var(--sh-sm);transition:all .15s;
+  font-family:'Noto Sans Thai',sans-serif;font-weight:500;
+}
+.tb-btn:hover{background:var(--pri-xlight);border-color:var(--pri-light);color:var(--pri-dark);}
+
+/* ── FLOAT ZOOM ── */
+.fc{position:absolute;bottom:20px;right:20px;display:flex;flex-direction:column;gap:6px;z-index:10;}
+.fc-btn{
+  width:38px;height:38px;background:#fff;border:1px solid var(--n200);
+  border-radius:var(--r-sm);color:var(--pri);font-size:17px;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;box-shadow:var(--sh-sm);transition:all .15s;
+}
+.fc-btn:hover{background:var(--pri-xlight);border-color:var(--pri-light);box-shadow:var(--sh-md);}
+
+/* ── STATUS BAR ── */
+.c-status{
+  position:absolute;bottom:14px;left:14px;
+  background:rgba(255,255,255,.92);border:1px solid var(--n200);
+  border-radius:20px;padding:5px 14px;
+  font-size:11px;color:var(--n500);font-family:'IBM Plex Mono',monospace;
+  box-shadow:var(--sh-sm);backdrop-filter:blur(6px);
+  z-index:10;display:flex;align-items:center;gap:8px;
+}
+
+/* ── TOOLTIP ── */
+.vtip{
+  position:absolute;background:#fff;border:1px solid var(--n200);
+  border-radius:var(--r-md);padding:12px 16px;
+  box-shadow:var(--sh-lg);pointer-events:none;
+  z-index:200;min-width:200px;display:none;
+}
+.vt-h{font-size:13px;font-weight:700;color:var(--pri-dark);border-bottom:1px solid var(--n100);padding-bottom:7px;margin-bottom:8px;}
+.vt-r{display:flex;justify-content:space-between;align-items:center;font-size:11.5px;color:var(--n500);margin-bottom:4px;gap:12px;}
+.vt-v{font-family:'IBM Plex Mono',monospace;color:var(--pri);font-weight:600;}
+.vt-on{color:var(--ok);font-weight:700;}
+.vt-off{color:var(--err);font-weight:700;}
+.vt-sa{color:var(--warn);font-weight:700;}
+
+/* ── MOBILE SIDEBAR TOGGLE ── */
+.sb-toggle{
+  display:none;position:absolute;top:12px;left:12px;z-index:20;
+  background:#fff;border:1px solid var(--n200);border-radius:var(--r-sm);
+  width:38px;height:38px;align-items:center;justify-content:center;
+  cursor:pointer;box-shadow:var(--sh-sm);font-size:18px;color:var(--pri);
+}
+.sb-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.28);z-index:490;backdrop-filter:blur(2px);}
+.sb-backdrop.show{display:block;}
+
+/* ── RESPONSIVE ── */
+@media(max-width:768px){
+  .sidebar{
+    position:fixed;top:62px;left:-280px;height:calc(100vh - 62px);
+    width:268px;z-index:500;transition:left .27s cubic-bezier(.4,0,.2,1);
+    box-shadow:var(--sh-lg);
+  }
+  .sidebar.open{left:0;}
+  .sb-toggle{display:flex;}
+  .brand p{display:none;}
+  .tb-badges .sbadge:last-child{display:none;}
+}
+@media(max-width:460px){
+  .tb-badges .sb-inf{display:none;}
+  .brand h1{font-size:14px;}
+}
+
+/* entry animation */
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+.topbar{animation:fadeUp .35s ease both;}
+.sidebar{animation:fadeUp .45s .08s ease both;}
+.canvas-wrap{animation:fadeUp .45s .12s ease both;}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <div class="tb-inner">
+    <div class="brand">
+      <div class="brand-icon"><i class="bi bi-camera-video-fill"></i></div>
+      <div>
+        <h1>ระบบกล้อง CCTV โรงพยาบาลจอมพระ</h1>
+        <p>NETWORK TOPOLOGY &nbsp;·&nbsp; VLAN 98 &nbsp;·&nbsp; DATA CENTER A</p>
+      </div>
+    </div>
+    <div class="tb-badges">
+      <span class="sbadge sb-on"><span class="ldot g"></span>Online 5 โซน</span>
+      <span class="sbadge sb-off"><span class="ldot o"></span>ไม่เชื่อมต่ออินเทอร์เน็ต 4 โซน</span>
+      <span class="sbadge sb-inf"><span class="ldot b"></span>~219 กล้อง</span>
+    </div>
+  </div>
+</header>
+
+<div class="page-body">
+  <div class="sb-backdrop" id="sbBack" onclick="closeSB()"></div>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+
+    <div>
+      <div class="sec-title"><i class="bi bi-wifi me-1"></i>โซนออนไลน์</div>
+      <div class="d-flex flex-column gap-2">
+        <div class="zcard on" onclick="focusZ('hosp')">
+          <div class="zcard-name"><i class="bi bi-hospital me-1 text-primary"></i>รอบโรงพยาบาล</div>
+          <div class="zcard-detail">NVR 22 ตัว &nbsp;·&nbsp; 5 อาคาร Uplink</div>
+          <span class="zpill p-on">ONLINE</span>
+        </div>
+        <div class="zcard on" onclick="focusZ('kidney')">
+          <div class="zcard-name"><i class="bi bi-building me-1 text-primary"></i>อาคารตึกไต</div>
+          <div class="zcard-detail">NVR 16 ตัว</div>
+          <span class="zpill p-on">ONLINE</span>
+        </div>
+        <div class="zcard on" onclick="focusZ('thai')">
+          <div class="zcard-name"><i class="bi bi-flower1 me-1 text-primary"></i>อาคารแผนไทย</div>
+          <div class="zcard-detail">NVR 14 ตัว</div>
+          <span class="zpill p-on">ONLINE</span>
+        </div>
+        <div class="zcard on" onclick="focusZ('admin')">
+          <div class="zcard-name"><i class="bi bi-building-fill me-1 text-primary"></i>อำนวยการ ชั้น 2</div>
+          <div class="zcard-detail">NVR #26, #31 &nbsp;·&nbsp; Switch 28P<br>57 กล้อง &nbsp;·&nbsp; 5 โซนย่อย</div>
+          <span class="zpill p-on">ONLINE</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="sdivider"></div>
+
+    <div>
+      <div class="sec-title"><i class="bi bi-hdd-network me-1"></i>โซนไม่เชื่อมต่ออินเทอร์เน็ต</div>
+      <div class="d-flex flex-column gap-2">
+        <div class="zcard off">
+          <div class="zcard-name"><i class="bi bi-capsule me-1" style="color:var(--warn)"></i>คลังยา</div>
+          <div class="zcard-detail">NVR + 16 กล้อง · ไม่เชื่อมต่ออินเทอร์เน็ต</div>
+          <span class="zpill p-off">ไม่เชื่อมต่ออินเทอร์เน็ต</span>
+        </div>
+        <div class="zcard off">
+          <div class="zcard-name"><i class="bi bi-person-badge me-1" style="color:var(--warn)"></i>OPD</div>
+          <div class="zcard-detail">NVR + 16 กล้อง · ไม่เชื่อมต่ออินเทอร์เน็ต</div>
+          <span class="zpill p-off">ไม่เชื่อมต่ออินเทอร์เน็ต</span>
+        </div>
+        <div class="zcard off">
+          <div class="zcard-name"><i class="bi bi-bed me-1" style="color:var(--warn)"></i>IPD1</div>
+          <div class="zcard-detail">NVR + 16 กล้อง · ไม่เชื่อมต่ออินเทอร์เน็ต</div>
+          <span class="zpill p-off">ไม่เชื่อมต่ออินเทอร์เน็ต</span>
+        </div>
+        <div class="zcard off">
+          <div class="zcard-name"><i class="bi bi-bed-fill me-1" style="color:var(--warn)"></i>IPD2</div>
+          <div class="zcard-detail">NVR + 16 กล้อง · ไม่เชื่อมต่ออินเทอร์เน็ต</div>
+          <span class="zpill p-off">ไม่เชื่อมต่ออินเทอร์เน็ต</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="sdivider"></div>
+
+    <div>
+      <div class="sec-title"><i class="bi bi-diagram-3 me-1"></i>ประเภทอุปกรณ์</div>
+      <div class="d-flex flex-column gap-1">
+        <div class="leg-row"><div class="leg-box" style="background:#dbeafe;border-color:#2563eb"></div>Data Center / Server</div>
+        <div class="leg-row"><div class="leg-box" style="background:#e0f2fe;border-color:#0284c7"></div>Core Switch</div>
+        <div class="leg-row"><div class="leg-box" style="background:#dcfce7;border-color:#16a34a"></div>NVR ออนไลน์</div>
+        <div class="leg-row"><div class="leg-box" style="background:#fef9c3;border-color:#ca8a04"></div>อาคาร / Building</div>
+        <div class="leg-row"><div class="leg-box" style="background:#ede9fe;border-color:#7c3aed"></div>Switch</div>
+        <div class="leg-row"><div class="leg-box" style="background:#f0f9ff;border-color:#7dd3fc"></div>กลุ่มกล้อง (Online)</div>
+        <div class="leg-row"><div class="leg-box" style="background:#fffbeb;border-color:#f59e0b;opacity:.9"></div>NVR / กล้อง ไม่เชื่อมต่ออินเทอร์เน็ต</div>
+      </div>
+    </div>
+
+    <div class="sdivider"></div>
+
+    <div>
+      <div class="sec-title"><i class="bi bi-arrow-left-right me-1"></i>ชนิดการเชื่อมต่อ</div>
+      <div class="d-flex flex-column gap-1">
+        <div class="leg-row"><div class="leg-ln"><svg width="24" height="10"><line x1="0" y1="5" x2="24" y2="5" stroke="#0284c7" stroke-width="2.5"/></svg></div>Backbone / VLAN 98</div>
+        <div class="leg-row"><div class="leg-ln"><svg width="24" height="10"><line x1="0" y1="5" x2="24" y2="5" stroke="#16a34a" stroke-width="2"/></svg></div>Online Uplink</div>
+        <div class="leg-row"><div class="leg-ln"><svg width="24" height="10"><line x1="0" y1="5" x2="24" y2="5" stroke="#d97706" stroke-width="1.5" stroke-dasharray="5,3"/></svg></div>Camera Uplink</div>
+        <div class="leg-row"><div class="leg-ln"><svg width="24" height="10"><line x1="0" y1="5" x2="24" y2="5" stroke="#d97706" stroke-width="1.5" stroke-dasharray="5,3"/></svg></div>ไม่เชื่อมต่ออินเทอร์เน็ต</div>
+      </div>
+    </div>
+
+  </aside>
+
+  <!-- CANVAS -->
+  <div class="canvas-wrap">
+    <button class="sb-toggle" onclick="toggleSB()"><i class="bi bi-list"></i></button>
+    <div id="mynetwork"></div>
+    <div class="c-toolbar">
+      <button class="tb-btn" onclick="fitAll()"><i class="bi bi-fullscreen me-1"></i>Fit All</button>
+      <button class="tb-btn" onclick="fitAll()"><i class="bi bi-arrow-counterclockwise me-1"></i>Reset</button>
+    </div>
+    <div class="fc">
+      <button class="fc-btn" onclick="zIn()" title="Zoom In"><i class="bi bi-plus-lg"></i></button>
+      <button class="fc-btn" onclick="zOut()" title="Zoom Out"><i class="bi bi-dash-lg"></i></button>
+    </div>
+    <div class="c-status"><span class="ldot g"></span>LIVE &nbsp;·&nbsp; VLAN 98 &nbsp;·&nbsp; Core Switch ห้อง Refer</div>
+  </div>
+</div>
+
+<div class="vtip" id="vtip"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// ── NODE STYLES ──
+const G = {
+  dc:  { shape:'box', color:{background:'#dbeafe',border:'#2563eb',highlight:{background:'#bfdbfe',border:'#1d4ed8'}}, font:{color:'#1e3a8a',size:13,face:'Noto Sans Thai',bold:true}, borderWidth:2, shadow:{enabled:true,color:'rgba(37,99,235,.25)',size:14,x:0,y:2}, widthConstraint:{minimum:160,maximum:200} },
+  cs:  { shape:'box', color:{background:'#e0f2fe',border:'#0284c7',highlight:{background:'#bae6fd',border:'#0369a1'}}, font:{color:'#0c4a6e',size:13,face:'Noto Sans Thai',bold:true}, borderWidth:2.5, shadow:{enabled:true,color:'rgba(3,105,161,.3)',size:18,x:0,y:2}, widthConstraint:{minimum:170,maximum:210} },
+  no:  { shape:'box', color:{background:'#dcfce7',border:'#16a34a',highlight:{background:'#bbf7d0',border:'#15803d'}}, font:{color:'#14532d',size:12,face:'Noto Sans Thai'}, borderWidth:1.5, shadow:{enabled:true,color:'rgba(22,163,74,.2)',size:10,x:0,y:2}, widthConstraint:{minimum:145,maximum:180} },
+  bl:  { shape:'box', color:{background:'#fef9c3',border:'#ca8a04',highlight:{background:'#fef08a',border:'#a16207'}}, font:{color:'#713f12',size:11,face:'Noto Sans Thai'}, borderWidth:1.5, shadow:{enabled:true,color:'rgba(202,138,4,.2)',size:8,x:0,y:2}, widthConstraint:{minimum:120,maximum:155} },
+  sw:  { shape:'box', color:{background:'#ede9fe',border:'#7c3aed',highlight:{background:'#ddd6fe',border:'#6d28d9'}}, font:{color:'#3b0764',size:11,face:'Noto Sans Thai'}, borderWidth:1.5, shadow:{enabled:true,color:'rgba(124,58,237,.2)',size:8,x:0,y:2}, widthConstraint:{minimum:130,maximum:165} },
+  co:  { shape:'box', color:{background:'#f0f9ff',border:'#7dd3fc',highlight:{background:'#e0f2fe',border:'#38bdf8'}}, font:{color:'#0c4a6e',size:11,face:'Noto Sans Thai'}, borderWidth:1, widthConstraint:{minimum:110,maximum:145} },
+  ol:  { shape:'box', color:{background:'#fffbeb',border:'#d97706',highlight:{background:'#fef3c7',border:'#b45309'}}, font:{color:'#92400e',size:13,face:'Noto Sans Thai',bold:true}, borderWidth:2, borderDashes:[8,4], widthConstraint:{minimum:220,maximum:260} },
+  nof: { shape:'box', color:{background:'#fffbeb',border:'#f59e0b',highlight:{background:'#fef3c7',border:'#d97706'}}, font:{color:'#78350f',size:12,face:'Noto Sans Thai'}, borderWidth:1.5, borderDashes:[5,4], widthConstraint:{minimum:150,maximum:185}, opacity:0.9 },
+  cof: { shape:'box', color:{background:'#fefce8',border:'#fbbf24',highlight:{background:'#fef9c3',border:'#f59e0b'}}, font:{color:'#713f12',size:11,face:'Noto Sans Thai'}, borderWidth:1, borderDashes:[3,3], opacity:0.8, widthConstraint:{minimum:100,maximum:130} },
+};
+
+// ── NODES ──
+const NDS = [
+  {id:'dc',   label:'🖥  ห้อง Server\nData Center A',          g:'dc',  x:0,     y:-540, info:{type:'Server Room',  location:'Data Center A',     vlan:'VLAN 98',  status:'ONLINE'}},
+  {id:'core', label:'⚡  Core Switch\nCCTV (ห้อง Refer)',       g:'cs',  x:0,     y:-340, info:{type:'Core Switch',  location:'ห้อง Refer',         ports:'48P',     status:'ONLINE'}},
+  {id:'n22',  label:'📼  NVR รอบโรงพยาบาล\n22 ตัว',           g:'no',  x:-700,  y:-90,  info:{type:'NVR',cameras:22, status:'ONLINE',zone:'รอบโรงพยาบาล'}},
+  {id:'nkd',  label:'📼  NVR ตึกไต\n16 ตัว',                   g:'no',  x:-220,  y:-90,  info:{type:'NVR',cameras:16, status:'ONLINE',zone:'ตึกไต'}},
+  {id:'nth',  label:'📼  NVR แผนไทย\n14 ตัว',                  g:'no',  x:220,   y:-90,  info:{type:'NVR',cameras:14, status:'ONLINE',zone:'แผนไทย'}},
+  {id:'n26',  label:'📼  NVR #26\nอำนวยการ ชั้น 2',            g:'no',  x:570,   y:-90,  info:{type:'NVR',id:26,      status:'ONLINE',zone:'อำนวยการ ชั้น 2'}},
+  {id:'n31',  label:'📼  NVR #31\nอำนวยการ ชั้น 2',            g:'no',  x:760,   y:-90,  info:{type:'NVR',id:31,      status:'ONLINE',zone:'อำนวยการ ชั้น 2'}},
+  {id:'bair', label:'🏢  อาคาร AIR',                            g:'bl',  x:-1060, y:150,  info:{type:'Building',uplink:'NVR-22',status:'ONLINE'}},
+  {id:'bmt',  label:'🏛  ห้องประชุม\nศรีจอมพระ',               g:'bl',  x:-880,  y:150,  info:{type:'Building',uplink:'NVR-22',status:'ONLINE'}},
+  {id:'bkk',  label:'🍳  โรงครัว',                              g:'bl',  x:-700,  y:150,  info:{type:'Building',uplink:'NVR-22',status:'ONLINE'}},
+  {id:'blb',  label:'🔬  ห้อง LAB',                             g:'bl',  x:-520,  y:150,  info:{type:'Building',uplink:'NVR-22',status:'ONLINE'}},
+  {id:'bad',  label:'🏛  อาคารอำนวยการ\nชั้น 2',               g:'bl',  x:-340,  y:150,  info:{type:'Building',uplink:'NVR-22',status:'ONLINE'}},
+  {id:'sw28', label:'🔀  Switch 28P\nอำนวยการ ชั้น 2',         g:'sw',  x:665,   y:120,  info:{type:'Switch',ports:28,location:'อำนวยการ ชั้น 2',status:'ONLINE'}},
+  {id:'s10',  label:'🔀  Switch 10P\nคลังยา',                  g:'sw',  x:420,   y:300,  info:{type:'Switch',ports:10,cameras:5, location:'คลังยา',      status:'ONLINE'}},
+  {id:'s28d', label:'🔀  Switch 28P\nห้องคลอด',               g:'sw',  x:580,   y:300,  info:{type:'Switch',ports:28,cameras:19,location:'ห้องคลอด',     status:'ONLINE'}},
+  {id:'s16',  label:'🔀  Switch 16P\nIPD1',                    g:'sw',  x:740,   y:300,  info:{type:'Switch',ports:16,cameras:14,location:'IPD1',          status:'ONLINE'}},
+  {id:'s24',  label:'🔀  Switch 24P\nอำนวยการ ชั้น 2',        g:'sw',  x:900,   y:300,  info:{type:'Switch',ports:24,cameras:17,location:'อำนวยการ ชั้น 2',status:'ONLINE'}},
+  {id:'cncd', label:'📷  NCD\n2 กล้อง',                        g:'co',  x:1060,  y:300,  info:{type:'Camera Group',cameras:2, location:'NCD',            status:'ONLINE'}},
+  {id:'cph',  label:'📷  คลังยา\n5 กล้อง',                    g:'co',  x:420,   y:460,  info:{type:'Camera Group',cameras:5, location:'คลังยา',          status:'ONLINE'}},
+  {id:'cdl',  label:'📷  ห้องคลอด\n19 กล้อง',                 g:'co',  x:580,   y:460,  info:{type:'Camera Group',cameras:19,location:'ห้องคลอด',        status:'ONLINE'}},
+  {id:'ci1',  label:'📷  IPD1\n14 กล้อง',                      g:'co',  x:740,   y:460,  info:{type:'Camera Group',cameras:14,location:'IPD1',             status:'ONLINE'}},
+  {id:'ca2',  label:'📷  อำนวยการ ชั้น 2\n17 กล้อง',           g:'co',  x:900,   y:460,  info:{type:'Camera Group',cameras:17,location:'อำนวยการ ชั้น 2', status:'ONLINE'}},
+  {id:'olbl', label:'🌐  โซนไม่เชื่อมต่ออินเทอร์เน็ต\n(ระบบทำงานได้ · แยกจากเครือข่ายหลัก)',     g:'ol',  x:0,     y:600,  info:{type:'Zone Label',status:'ไม่เชื่อมต่ออินเทอร์เน็ต'}},
+  {id:'of1',  label:'🟡  NVR ไม่เชื่อมต่ออินเทอร์เน็ต\nคลังยา · 16 กล้อง',    g:'nof', x:-400,  y:770,  info:{type:'NVR',cameras:16,status:'ไม่เชื่อมต่ออินเทอร์เน็ต',zone:'คลังยา'}},
+  {id:'of2',  label:'🟡  NVR ไม่เชื่อมต่ออินเทอร์เน็ต\nOPD · 16 กล้อง',       g:'nof', x:-130,  y:770,  info:{type:'NVR',cameras:16,status:'ไม่เชื่อมต่ออินเทอร์เน็ต',zone:'OPD'}},
+  {id:'of3',  label:'🟡  NVR ไม่เชื่อมต่ออินเทอร์เน็ต\nIPD1 · 16 กล้อง',      g:'nof', x:130,   y:770,  info:{type:'NVR',cameras:16,status:'ไม่เชื่อมต่ออินเทอร์เน็ต',zone:'IPD1'}},
+  {id:'of4',  label:'🟡  NVR ไม่เชื่อมต่ออินเทอร์เน็ต\nIPD2 · 16 กล้อง',      g:'nof', x:400,   y:770,  info:{type:'NVR',cameras:16,status:'ไม่เชื่อมต่ออินเทอร์เน็ต',zone:'IPD2'}},
+  {id:'cf1',  label:'📷  คลังยา\n16 กล้อง',                   g:'cof', x:-400,  y:930,  info:{cameras:16,status:'ไม่เชื่อมต่ออินเทอร์เน็ต'}},
+  {id:'cf2',  label:'📷  OPD\n16 กล้อง',                       g:'cof', x:-130,  y:930,  info:{cameras:16,status:'ไม่เชื่อมต่ออินเทอร์เน็ต'}},
+  {id:'cf3',  label:'📷  IPD1\n16 กล้อง',                      g:'cof', x:130,   y:930,  info:{cameras:16,status:'ไม่เชื่อมต่ออินเทอร์เน็ต'}},
+  {id:'cf4',  label:'📷  IPD2\n16 กล้อง',                      g:'cof', x:400,   y:930,  info:{cameras:16,status:'ไม่เชื่อมต่ออินเทอร์เน็ต'}},
+];
+
+// ── EDGE STYLES ──
+const ES = {
+  bb:  {color:{color:'#0284c7',opacity:.95},width:3,  arrows:{to:{enabled:true,scaleFactor:1.1}},dashes:false, smooth:{type:'curvedCW',roundness:.1},shadow:{enabled:true,color:'rgba(2,132,199,.35)',size:8}},
+  on:  {color:{color:'#16a34a',opacity:.85},width:2,  arrows:{to:{enabled:true,scaleFactor:.9}}, dashes:false, smooth:{type:'curvedCW',roundness:.1}},
+  uc:  {color:{color:'#d97706',opacity:.75},width:1.5,arrows:{to:{enabled:true,scaleFactor:.8}}, dashes:[5,4], smooth:{type:'curvedCW',roundness:.15}},
+  cl:  {color:{color:'#94a3b8',opacity:.75},width:1.2,arrows:{to:{enabled:true,scaleFactor:.7}}, dashes:false, smooth:{type:'curvedCW',roundness:.1}},
+  of:  {color:{color:'#d97706',opacity:.6}, width:1.5,arrows:{to:{enabled:true,scaleFactor:.8}}, dashes:[6,4], smooth:{type:'curvedCW',roundness:.15}},
+};
+
+// ── EDGES ──
+const EDS = [
+  {f:'dc',  t:'core',g:'bb',lbl:'VLAN 98'},
+  {f:'core',t:'n22', g:'on'},{f:'core',t:'nkd',g:'on'},{f:'core',t:'nth',g:'on'},
+  {f:'core',t:'n26', g:'on'},{f:'core',t:'n31',g:'on'},
+  {f:'n22', t:'bair',g:'uc'},{f:'n22',t:'bmt',g:'uc'},{f:'n22',t:'bkk',g:'uc'},
+  {f:'n22', t:'blb', g:'uc'},{f:'n22',t:'bad',g:'uc'},
+  {f:'n26', t:'sw28',g:'on'},{f:'n31',t:'sw28',g:'on'},
+  {f:'sw28',t:'s10', g:'on'},{f:'sw28',t:'s28d',g:'on'},{f:'sw28',t:'s16',g:'on'},
+  {f:'sw28',t:'s24', g:'on'},{f:'sw28',t:'cncd',g:'on'},
+  {f:'s10', t:'cph', g:'cl'},{f:'s28d',t:'cdl',g:'cl'},{f:'s16',t:'ci1',g:'cl'},{f:'s24',t:'ca2',g:'cl'},
+  {f:'olbl',t:'of1', g:'of'},{f:'olbl',t:'of2',g:'of'},{f:'olbl',t:'of3',g:'of'},{f:'olbl',t:'of4',g:'of'},
+  {f:'of1', t:'cf1', g:'of'},{f:'of2',t:'cf2',g:'of'},{f:'of3',t:'cf3',g:'of'},{f:'of4',t:'cf4',g:'of'},
+];
+
+// ── BUILD VIS ──
+const nodes = new vis.DataSet(NDS.map(n=>({...n,...G[n.g],physics:false})));
+const edges = new vis.DataSet(EDS.map((e,i)=>({id:i,from:e.f,to:e.t,label:e.lbl||'',
+  font:{color:'#64748b',size:9,face:'IBM Plex Mono',background:'rgba(248,250,252,.9)',strokeWidth:0},
+  ...ES[e.g]})));
+
+const net = new vis.Network(
+  document.getElementById('mynetwork'),
+  {nodes,edges},
+  {physics:{enabled:false},interaction:{hover:true,tooltipDelay:150,zoomView:true,navigationButtons:false},
+   nodes:{borderRadius:8,margin:{top:8,right:10,bottom:8,left:10}},
+   edges:{chosen:false},layout:{improvedLayout:false}}
+);
+setTimeout(()=>net.fit({animation:{duration:900,easingFunction:'easeInOutQuad'}}),200);
+
+// ── TOOLTIP ──
+const tip=document.getElementById('vtip');
+const wrap=document.getElementById('mynetwork');
+
+net.on('hoverNode',p=>{
+  const n=nodes.get(p.node); if(!n?.info) return;
+  const d=n.info;
+  let h=`<div class="vt-h">${n.label.replace(/\n/g,' ')}</div>`;
+  if(d.type)    h+=R('ประเภท',d.type);
+  if(d.status){const c=d.status==='ONLINE'?'vt-on':'vt-sa'; h+=`<div class="vt-r"><span>สถานะ</span><span class="${c}">${d.status}</span></div>`;}
+  if(d.cameras) h+=R('จำนวนกล้อง',d.cameras+' ตัว');
+  if(d.ports)   h+=R('พอร์ต',d.ports);
+  if(d.vlan)    h+=R('VLAN',d.vlan);
+  if(d.location)h+=R('ตำแหน่ง',d.location);
+  if(d.zone)    h+=R('โซน',d.zone);
+  tip.innerHTML=h; tip.style.display='block';
+  const r=wrap.getBoundingClientRect();
+  let x=p.event.center.x+16, y=p.event.center.y-16;
+  if(x+220>r.width) x=p.event.center.x-228;
+  if(y+210>r.height) y=p.event.center.y-215;
+  tip.style.left=x+'px'; tip.style.top=y+'px';
+});
+net.on('blurNode',()=>tip.style.display='none');
+net.on('click',()=>tip.style.display='none');
+net.on('hoverNode',()=>wrap.style.cursor='pointer');
+net.on('blurNode',()=>wrap.style.cursor='default');
+function R(k,v){return`<div class="vt-r"><span>${k}</span><span class="vt-v">${v}</span></div>`;}
+
+// ── CONTROLS ──
+function fitAll(){net.fit({animation:{duration:700,easingFunction:'easeInOutQuad'}});}
+function zIn(){net.moveTo({scale:net.getScale()*1.2});}
+function zOut(){net.moveTo({scale:net.getScale()*0.83});}
+
+// ── ZONE FOCUS ──
+const ZONES={
+  hosp:  ['n22','bair','bmt','bkk','blb','bad'],
+  kidney:['nkd'],
+  thai:  ['nth'],
+  admin: ['n26','n31','sw28','s10','s28d','s16','s24','cncd','cph','cdl','ci1','ca2'],
+};
+function focusZ(z){
+  const ids=ZONES[z]; if(!ids) return;
+  net.selectNodes(ids);
+  net.fit({nodes:ids,animation:{duration:700,easingFunction:'easeInOutQuad'}});
+  closeSB();
+}
+
+// ── MOBILE SIDEBAR ──
+function toggleSB(){
+  const s=document.getElementById('sidebar'),b=document.getElementById('sbBack');
+  const o=s.classList.toggle('open'); b.classList.toggle('show',o);
+}
+function closeSB(){
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sbBack').classList.remove('show');
+}
+</script>
+</body>
+</html>
