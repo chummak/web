@@ -650,23 +650,23 @@
             <div>
                 <div class="sec-title"><i class="bi bi-hdd-network me-1"></i>โซนไม่เชื่อมต่ออินเทอร์เน็ต</div>
                 <div class="d-flex flex-column gap-2">
-                    <div class="zcard off">
+                    <div class="zcard off" onclick="focusZ('offline')">
                         <div class="zcard-name"><i class="bi bi-capsule me-1" style="color:var(--warn)"></i>คลังยา</div>
                         <div class="zcard-detail">NVR + 16 กล้อง · ไม่เชื่อมต่ออินเทอร์เน็ต</div>
                         <span class="zpill p-off">ไม่เชื่อมต่ออินเทอร์เน็ต</span>
                     </div>
-                    <div class="zcard off">
+                    <div class="zcard off" onclick="focusZ('offline')">
                         <div class="zcard-name"><i class="bi bi-person-badge me-1" style="color:var(--warn)"></i>OPD
                         </div>
                         <div class="zcard-detail">NVR + 16 กล้อง · ไม่เชื่อมต่ออินเทอร์เน็ต</div>
                         <span class="zpill p-off">ไม่เชื่อมต่ออินเทอร์เน็ต</span>
                     </div>
-                    <div class="zcard off">
+                    <div class="zcard off" onclick="focusZ('offline')">
                         <div class="zcard-name"><i class="bi bi-bed me-1" style="color:var(--warn)"></i>IPD1</div>
                         <div class="zcard-detail">NVR + 16 กล้อง · ไม่เชื่อมต่ออินเทอร์เน็ต</div>
                         <span class="zpill p-off">ไม่เชื่อมต่ออินเทอร์เน็ต</span>
                     </div>
-                    <div class="zcard off">
+                    <div class="zcard off" onclick="focusZ('offline')">
                         <div class="zcard-name"><i class="bi bi-bed-fill me-1" style="color:var(--warn)"></i>IPD2</div>
                         <div class="zcard-detail">NVR + 16 กล้อง · ไม่เชื่อมต่ออินเทอร์เน็ต</div>
                         <span class="zpill p-off">ไม่เชื่อมต่ออินเทอร์เน็ต</span>
@@ -888,6 +888,15 @@
             kidney: ['nkd'],
             thai: ['nth'],
             admin: ['n26', 'n31', 'sw28', 's10', 's28d', 's16', 's24', 'cncd', 'cph', 'cdl', 'ci1', 'ca2'],
+            offline: ['olbl',
+                'of1',
+                'of2',
+                'of3',
+                'of4',
+                'cf1',
+                'cf2',
+                'cf3',
+                'cf4',],
         };
         function focusZ(z) {
             const ids = ZONES[z]; if (!ids) return;
