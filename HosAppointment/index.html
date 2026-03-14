@@ -6,24 +6,22 @@
 <title>ตารางเปิดจองนัดออนไลน์</title>
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 
 <style>
 :root {
-  --primary: #1a4a8a;
+  --primary:       #1a4a8a;
   --primary-light: #2563b0;
-  --primary-pale: #e8f0fb;
-  --accent: #0891b2;
-  --accent-light: #e0f2f7;
-  --success: #0f766e;
-  --success-bg: #e6f7f5;
-  --closed: #94a3b8;
-  --closed-bg: #f1f5f9;
-  --text-main: #1e2d40;
-  --text-muted: #64748b;
-  --border: #dde6f0;
-  --card-bg: #ffffff;
-  --surface: #f0f5fc;
+  --primary-pale:  #e8f0fb;
+  --accent:        #0891b2;
+  --success:       #0f766e;
+  --success-bg:    #e6f7f5;
+  --closed:        #94a3b8;
+  --closed-bg:     #f1f5f9;
+  --text-main:     #1e2d40;
+  --text-muted:    #64748b;
+  --border:        #dde6f0;
+  --card-bg:       #ffffff;
+  --surface:       #f0f5fc;
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -35,12 +33,10 @@ body {
   min-height: 100vh;
 }
 
-/* ─── HERO HEADER ─── */
+/* ── HERO ── */
 .hero {
   background: linear-gradient(135deg, #0f2d5e 0%, #1a4a8a 45%, #1e6fa8 100%);
-  padding: 0;
-  position: relative;
-  overflow: hidden;
+  position: relative; overflow: hidden;
 }
 .hero::before {
   content: '';
@@ -51,7 +47,7 @@ body {
   position: relative; z-index: 1;
   max-width: 1140px; margin: 0 auto;
   padding: 36px 24px 32px;
-  display: flex; align-items: center; gap: 20px;
+  display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
 }
 .hero-icon {
   width: 64px; height: 64px; flex-shrink: 0;
@@ -62,24 +58,19 @@ body {
 }
 .hero-icon svg { width: 36px; height: 36px; fill: white; }
 .hero-text h1 {
-  font-size: clamp(1.35rem, 3vw, 1.75rem);
-  font-weight: 700; color: #fff;
-  letter-spacing: 0.01em; line-height: 1.25;
+  font-size: clamp(1.25rem, 3vw, 1.75rem);
+  font-weight: 700; color: #fff; line-height: 1.25;
 }
-.hero-text p {
-  font-size: 0.9rem; color: rgba(255,255,255,0.72);
-  margin-top: 5px; font-weight: 400;
-}
+.hero-text p { font-size: 0.88rem; color: rgba(255,255,255,0.72); margin-top: 5px; }
 .hero-badge {
-  margin-left: auto; flex-shrink: 0;
+  margin-left: auto;
   background: rgba(255,255,255,0.13);
   border: 1px solid rgba(255,255,255,0.22);
   color: #fff; font-size: 0.78rem; font-weight: 500;
-  padding: 6px 14px; border-radius: 20px;
-  white-space: nowrap;
+  padding: 6px 14px; border-radius: 20px; white-space: nowrap;
 }
 
-/* ─── NAV TABS ─── */
+/* ── NAV TABS ── */
 .dept-nav {
   background: var(--card-bg);
   border-bottom: 1px solid var(--border);
@@ -87,169 +78,44 @@ body {
   box-shadow: 0 2px 8px rgba(26,74,138,0.07);
 }
 .dept-nav-inner {
-  max-width: 1140px; margin: 0 auto;
-  padding: 0 16px;
-  display: flex; gap: 0; overflow-x: auto;
-  scrollbar-width: none;
+  max-width: 1140px; margin: 0 auto; padding: 0 16px;
+  display: flex; overflow-x: auto; scrollbar-width: none;
 }
 .dept-nav-inner::-webkit-scrollbar { display: none; }
 .dept-tab {
-  padding: 14px 18px; font-size: 0.85rem; font-weight: 500;
+  padding: 14px 16px; font-size: 0.84rem; font-weight: 500;
   color: var(--text-muted); cursor: pointer;
-  border-bottom: 3px solid transparent;
+  border: none; border-bottom: 3px solid transparent;
   white-space: nowrap; transition: all 0.2s;
-  display: flex; align-items: center; gap: 8px;
-  text-decoration: none;
-  flex-shrink: 0;
+  display: flex; align-items: center; gap: 7px;
+  flex-shrink: 0; background: none; font-family: inherit;
 }
 .dept-tab:hover { color: var(--primary-light); }
-.dept-tab.active {
-  color: var(--primary);
-  border-bottom-color: var(--primary);
-  font-weight: 600;
-}
-.dept-tab .dot {
-  width: 8px; height: 8px; border-radius: 50%;
-  background: var(--closed);
-}
+.dept-tab.active { color: var(--primary); border-bottom-color: var(--primary); font-weight: 700; }
+.dept-tab .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--closed); flex-shrink: 0; }
 .dept-tab.active .dot { background: var(--primary); }
 
-/* ─── MAIN CONTENT ─── */
-.main {
-  max-width: 1140px; margin: 0 auto;
-  padding: 28px 16px 48px;
-}
+/* ── MAIN ── */
+.main { max-width: 1140px; margin: 0 auto; padding: 28px 16px 60px; }
 
-/* ─── DEPT SECTION ─── */
 .dept-section { display: none; animation: fadeIn 0.3s ease; }
 .dept-section.show { display: block; }
-
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(8px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
-.dept-header {
-  display: flex; align-items: center; gap: 14px;
-  margin-bottom: 20px;
-}
-.dept-color-bar {
-  width: 5px; height: 42px; border-radius: 3px;
-  background: linear-gradient(180deg, var(--primary), var(--accent));
-}
-.dept-header h2 {
-  font-size: 1.25rem; font-weight: 700; color: var(--primary);
-  line-height: 1.2;
-}
-.dept-header p {
-  font-size: 0.82rem; color: var(--text-muted); margin-top: 2px;
-}
-.dept-summary {
-  margin-left: auto; display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end;
-}
-.summary-pill {
-  background: var(--primary-pale);
-  border: 1px solid #c5d8f5;
-  color: var(--primary); font-size: 0.78rem; font-weight: 600;
-  padding: 5px 13px; border-radius: 20px;
-}
-.summary-pill.open-days {
-  background: var(--success-bg);
-  border-color: #a7ddd7;
-  color: var(--success);
-}
-
-/* ─── DAY GRID ─── */
-.day-grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 10px;
-}
-@media (max-width: 1000px) { .day-grid { grid-template-columns: repeat(4, 1fr); } }
-@media (max-width: 640px)  { .day-grid { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 360px)  { .day-grid { grid-template-columns: 1fr 1fr; } }
-
-.day-card {
-  background: var(--card-bg);
-  border: 1.5px solid var(--border);
-  border-radius: 14px;
-  overflow: hidden;
-  transition: box-shadow 0.2s, transform 0.2s;
-  position: relative;
-}
-.day-card:hover { box-shadow: 0 6px 20px rgba(26,74,138,0.1); transform: translateY(-2px); }
-.day-card.is-open { border-color: #b8d4f0; }
-.day-card.is-closed { opacity: 0.68; }
-
-.day-head {
-  padding: 10px 12px 8px;
-  display: flex; align-items: center; justify-content: space-between;
-}
-.day-name {
-  font-weight: 700; font-size: 0.95rem; color: var(--text-main);
-}
-.status-badge {
-  font-size: 0.68rem; font-weight: 600; padding: 2px 8px;
-  border-radius: 10px; letter-spacing: 0.02em;
-}
-.open-badge {
-  background: var(--success-bg); color: var(--success);
-}
-.closed-badge {
-  background: var(--closed-bg); color: var(--closed);
-}
-
-.day-divider { height: 1px; background: var(--border); margin: 0 10px; }
-
-.day-body { padding: 10px 12px 12px; }
-
-.time-slot {
-  display: flex; align-items: center; gap: 7px;
-  padding: 5px 0;
-  border-bottom: 1px dashed #e8eef6;
-}
-.time-slot:last-child { border-bottom: none; }
-
-.slot-time {
-  font-size: 0.72rem; color: var(--text-muted);
-  font-weight: 500; min-width: 88px; flex-shrink: 0;
-}
-.slot-count {
-  font-size: 0.78rem; font-weight: 700;
-  color: var(--primary-light);
-  background: var(--primary-pale);
-  padding: 1px 8px; border-radius: 6px;
-}
-.slot-unit { font-size: 0.7rem; color: var(--text-muted); }
-
-.no-slot {
-  padding: 12px 0; text-align: center;
-  font-size: 0.78rem; color: var(--closed);
-}
-.no-slot-icon { font-size: 1.1rem; display: block; margin-bottom: 3px; }
-
-.day-total {
-  margin-top: 8px; padding-top: 8px;
-  border-top: 1.5px solid var(--border);
-  display: flex; align-items: center; justify-content: space-between;
-}
-.total-label { font-size: 0.72rem; color: var(--text-muted); }
-.total-num {
-  font-size: 0.88rem; font-weight: 700; color: var(--primary);
-}
-
-/* ─── OVERVIEW SECTION ─── */
+/* ── OVERVIEW CARDS ── */
 .overview-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 14px; margin-bottom: 32px;
+  grid-template-columns: repeat(auto-fill, minmax(195px, 1fr));
+  gap: 14px; margin-bottom: 28px;
 }
 .dept-card {
   background: var(--card-bg);
   border: 1.5px solid var(--border);
   border-radius: 14px; padding: 18px;
-  cursor: pointer; transition: all 0.2s;
-  position: relative; overflow: hidden;
+  cursor: pointer; transition: all 0.2s; position: relative; overflow: hidden;
 }
 .dept-card::before {
   content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
@@ -260,105 +126,143 @@ body {
   box-shadow: 0 6px 24px rgba(26,74,138,0.12);
   transform: translateY(-3px);
 }
-.dept-card-icon {
-  font-size: 1.6rem; margin-bottom: 10px;
-}
-.dept-card-name {
-  font-size: 0.88rem; font-weight: 700; color: var(--primary);
-  line-height: 1.35; margin-bottom: 10px;
-}
-.dept-card-stat {
-  display: flex; gap: 12px; flex-wrap: wrap;
-}
-.stat-item {
-  display: flex; flex-direction: column;
-}
-.stat-val { font-size: 1.1rem; font-weight: 700; color: var(--text-main); }
-.stat-lbl { font-size: 0.68rem; color: var(--text-muted); }
-.dept-card-arrow {
-  position: absolute; bottom: 14px; right: 14px;
-  color: var(--primary-light); font-size: 1rem; opacity: 0.5;
-}
+.dept-card-icon { font-size: 1.6rem; margin-bottom: 10px; }
+.dept-card-name { font-size: 0.87rem; font-weight: 700; color: var(--primary); line-height: 1.35; margin-bottom: 12px; }
+.dept-card-stat { display: flex; gap: 16px; flex-wrap: wrap; }
+.stat-item { display: flex; flex-direction: column; }
+.stat-val { font-size: 1.15rem; font-weight: 700; color: var(--text-main); }
+.stat-lbl { font-size: 0.67rem; color: var(--text-muted); }
+.dept-card-arrow { position: absolute; bottom: 14px; right: 14px; color: var(--primary-light); font-size: 1rem; opacity: 0.45; }
 
-/* ─── WEEKLY VIEW ─── */
+/* ── WEEKLY TABLE ── */
+.section-title { font-size: 0.95rem; font-weight: 700; color: var(--primary); margin-bottom: 12px; }
+
 .week-table-wrap {
   background: var(--card-bg);
   border: 1.5px solid var(--border);
-  border-radius: 14px; overflow: hidden;
-  margin-bottom: 14px;
+  border-radius: 14px; overflow: hidden; margin-bottom: 8px;
+  overflow-x: auto;
 }
-.week-table {
-  width: 100%; border-collapse: collapse;
-  font-size: 0.8rem;
-}
+.week-table { width: 100%; border-collapse: collapse; font-size: 0.79rem; min-width: 620px; }
 .week-table th {
-  background: var(--primary);
-  color: white; font-weight: 600;
-  padding: 10px 12px; text-align: center;
-  font-size: 0.78rem;
+  background: var(--primary); color: white; font-weight: 600;
+  padding: 10px 12px; text-align: center; font-size: 0.77rem; white-space: nowrap;
 }
-.week-table th:first-child { text-align: left; min-width: 120px; }
+.week-table th:first-child { text-align: left; min-width: 145px; }
 .week-table td {
-  padding: 9px 12px; text-align: center;
-  border-bottom: 1px solid var(--border);
-  vertical-align: middle;
+  padding: 8px 12px; text-align: center;
+  border-bottom: 1px solid var(--border); vertical-align: middle;
 }
-.week-table td:first-child {
-  font-weight: 600; text-align: left;
-  color: var(--text-main); background: #fafcff;
-}
+.week-table td:first-child { font-weight: 600; text-align: left; background: #fafcff; }
 .week-table tr:last-child td { border-bottom: none; }
 .week-table tr:hover td { background: #f5f8ff; }
 .week-table tr:hover td:first-child { background: #edf2fc; }
 .cell-open {
-  display: inline-flex; align-items: center; gap: 4px;
-  background: var(--success-bg);
-  border: 1px solid #b0dcd8;
-  color: var(--success);
-  padding: 3px 9px; border-radius: 8px;
-  font-weight: 600; font-size: 0.76rem;
+  display: inline-flex; align-items: center; gap: 3px;
+  background: var(--success-bg); border: 1px solid #b0dcd8;
+  color: var(--success); padding: 2px 8px; border-radius: 7px;
+  font-weight: 700; font-size: 0.75rem;
 }
-.cell-closed {
-  color: #c9d5e0;
-}
+.cell-closed { color: #c9d5e0; }
 
-/* ─── TABS INSIDE ─── */
-.view-toggle {
-  display: flex; gap: 6px; margin-bottom: 18px; flex-wrap: wrap;
+/* ── DEPT HEADER ── */
+.dept-header {
+  display: flex; align-items: center; gap: 14px;
+  margin-bottom: 18px; flex-wrap: wrap;
 }
+.dept-color-bar { width: 5px; height: 42px; border-radius: 3px; background: linear-gradient(180deg, var(--primary), var(--accent)); flex-shrink: 0; }
+.dept-header h2 { font-size: 1.2rem; font-weight: 700; color: var(--primary); line-height: 1.2; }
+.dept-header p { font-size: 0.81rem; color: var(--text-muted); margin-top: 2px; }
+.dept-summary { margin-left: auto; display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+.summary-pill {
+  background: var(--primary-pale); border: 1px solid #c5d8f5;
+  color: var(--primary); font-size: 0.77rem; font-weight: 600;
+  padding: 4px 12px; border-radius: 20px;
+}
+.summary-pill.open-days { background: var(--success-bg); border-color: #a7ddd7; color: var(--success); }
+
+/* ── VIEW TOGGLE ── */
+.view-toggle { display: flex; gap: 6px; margin-bottom: 16px; }
 .view-btn {
-  padding: 7px 16px; border-radius: 8px; font-size: 0.8rem; font-weight: 600;
+  padding: 6px 15px; border-radius: 8px; font-size: 0.8rem; font-weight: 600;
   border: 1.5px solid var(--border); background: var(--card-bg);
-  color: var(--text-muted); cursor: pointer; transition: all 0.18s;
+  color: var(--text-muted); cursor: pointer; transition: all 0.18s; font-family: inherit;
 }
-.view-btn.active {
-  background: var(--primary); border-color: var(--primary); color: white;
-}
+.view-btn.active { background: var(--primary); border-color: var(--primary); color: white; }
 .view-btn:hover:not(.active) { border-color: var(--primary-light); color: var(--primary); }
 
-/* ─── FOOTER ─── */
-.footer {
-  background: var(--primary);
-  color: rgba(255,255,255,0.65);
-  text-align: center; padding: 18px;
-  font-size: 0.78rem; margin-top: 20px;
+/* ── DAY GRID ── */
+.day-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 10px;
 }
-.footer strong { color: white; }
+@media (max-width: 1000px) { .day-grid { grid-template-columns: repeat(4, 1fr); } }
+@media (max-width: 640px)  { .day-grid { grid-template-columns: repeat(2, 1fr); } }
 
-/* ─── LOADING ─── */
+.day-card {
+  background: var(--card-bg); border: 1.5px solid var(--border);
+  border-radius: 14px; overflow: hidden; transition: box-shadow 0.2s, transform 0.2s;
+}
+.day-card:hover { box-shadow: 0 6px 20px rgba(26,74,138,0.1); transform: translateY(-2px); }
+.day-card.is-open { border-color: #b8d4f0; }
+.day-card.is-closed { opacity: 0.62; }
+
+.day-head {
+  padding: 10px 12px 8px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.day-name { font-weight: 700; font-size: 0.92rem; color: var(--text-main); }
+.status-badge { font-size: 0.67rem; font-weight: 700; padding: 2px 8px; border-radius: 10px; }
+.open-badge  { background: var(--success-bg); color: var(--success); }
+.closed-badge { background: var(--closed-bg); color: var(--closed); }
+
+.day-divider { height: 1px; background: var(--border); margin: 0 10px; }
+
+.day-body { padding: 10px 12px 12px; }
+
+.time-slot {
+  display: flex; align-items: center; gap: 6px; padding: 5px 0;
+  border-bottom: 1px dashed #e8eef6;
+}
+.time-slot:last-child { border-bottom: none; }
+.slot-time { font-size: 0.7rem; color: var(--text-muted); font-weight: 500; min-width: 84px; flex-shrink: 0; }
+.slot-count {
+  font-size: 0.77rem; font-weight: 700; color: var(--primary-light);
+  background: var(--primary-pale); padding: 1px 8px; border-radius: 6px;
+}
+.slot-unit { font-size: 0.68rem; color: var(--text-muted); }
+
+.no-slot { padding: 14px 0; text-align: center; font-size: 0.77rem; color: var(--closed); }
+.no-slot-icon { font-size: 1rem; display: block; margin-bottom: 3px; }
+
+.day-total {
+  margin-top: 8px; padding-top: 8px;
+  border-top: 1.5px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.total-label { font-size: 0.7rem; color: var(--text-muted); }
+.total-num { font-size: 0.86rem; font-weight: 700; color: var(--primary); }
+
+/* ── LOADING ── */
 #loading {
   display: flex; flex-direction: column;
   align-items: center; justify-content: center;
-  min-height: 280px; gap: 16px; color: var(--text-muted);
+  min-height: 280px; gap: 14px; color: var(--text-muted);
 }
 .spinner {
   width: 38px; height: 38px;
-  border: 3px solid var(--border);
-  border-top-color: var(--primary);
-  border-radius: 50%;
-  animation: spin 0.75s linear infinite;
+  border: 3px solid var(--border); border-top-color: var(--primary);
+  border-radius: 50%; animation: spin 0.75s linear infinite;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── FOOTER ── */
+.footer {
+  background: var(--primary); color: rgba(255,255,255,0.65);
+  text-align: center; padding: 16px; font-size: 0.77rem;
+}
+.footer strong { color: white; }
 </style>
 </head>
 <body>
@@ -382,9 +286,9 @@ body {
 <!-- NAV TABS -->
 <div class="dept-nav">
   <div class="dept-nav-inner" id="deptTabs">
-    <a class="dept-tab active" data-tab="overview" onclick="switchTab('overview',this)">
+    <button class="dept-tab active" data-tab="overview" onclick="switchTab('overview',this)">
       <span class="dot"></span> ภาพรวม
-    </a>
+    </button>
   </div>
 </div>
 
@@ -397,107 +301,155 @@ body {
   <div id="dashboard" style="display:none;"></div>
 </div>
 
-<!-- FOOTER -->
 <div class="footer">
-  <strong>ระบบจองนัดออนไลน์</strong> &nbsp;|&nbsp; ข้อมูลอัปเดตจากไฟล์ตารางนัด
+  <strong>ระบบจองนัดออนไลน์</strong> &nbsp;|&nbsp; ข้อมูลดึงจาก Google Sheets แบบ Real-time
 </div>
 
 <script>
-const DAYS_ORDER = ['จันทร์','อังคาร','พุธ','พฤหัสบดี','ศุกร์','เสาร์','อาทิตย์'];
+// ══════════════════════════════════════════════════════
+//  ⚙️  CONFIG
+//  หากต้องการเปลี่ยน Google Sheet ให้แก้ SHEET_ID
+//  และอัปเดต SHEET_NAMES ให้ตรงกับชื่อ Sheet จริง
+// ══════════════════════════════════════════════════════
+const SHEET_ID   = "12p057HTdfx29RctX8nuiBP_EcTGGZs3rDhASL5qunIY";
+
+const SHEET_NAMES = [
+  'กายภาพบำบัด',
+  'คลินิคฝากครรภ์',
+  'ตรวจโรคทั่วไป',
+  'ฝ่ายทันตสาธารณสุข',
+  'แพทย์แผนไทย'
+];
+
 const DEPT_ICONS = {
-  'กายภาพบำบัด': '🦴',
-  'คลินิคฝากครรภ์': '🤰',
-  'ตรวจโรคทั่วไป': '🩺',
+  'กายภาพบำบัด':       '🦴',
+  'คลินิคฝากครรภ์':    '🤰',
+  'ตรวจโรคทั่วไป':     '🩺',
   'ฝ่ายทันตสาธารณสุข': '🦷',
-  'แพทย์แผนไทย': '🌿',
+  'แพทย์แผนไทย':       '🌿',
 };
 const DEPT_DESCS = {
-  'กายภาพบำบัด': 'Physical Therapy',
-  'คลินิคฝากครรภ์': 'Antenatal Clinic',
-  'ตรวจโรคทั่วไป': 'General Practice',
+  'กายภาพบำบัด':       'Physical Therapy',
+  'คลินิคฝากครรภ์':    'Antenatal Clinic',
+  'ตรวจโรคทั่วไป':     'General Practice',
   'ฝ่ายทันตสาธารณสุข': 'Dental Clinic',
-  'แพทย์แผนไทย': 'Thai Traditional Medicine',
+  'แพทย์แผนไทย':       'Thai Traditional Medicine',
 };
+const DAYS_ORDER = ['จันทร์','อังคาร','พุธ','พฤหัสบดี','ศุกร์','เสาร์','อาทิตย์'];
 
+// ══════════════════════════════════════════════════════
+//  📡  FETCH จาก Google Sheets  (ไม่ต้องใช้ API Key)
+//  ใช้ gviz/tq endpoint — ทำงานได้เมื่อ Sheet เป็น Public
+// ══════════════════════════════════════════════════════
+async function fetchSheet(sheetName) {
+  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}`;
+  const res  = await fetch(url);
+  if (!res.ok) throw new Error(`HTTP ${res.status} — ${sheetName}`);
+  const text = await res.text();
+  // Google ส่ง JSONP กลับ → ตัด wrapper ออก
+  const json = JSON.parse(text.substring(47).slice(0, -2));
+  return gvizToRows(json);
+}
+
+function gvizToRows(json) {
+  const cols = json.table.cols.map(c => c.label);
+  return (json.table.rows || []).map(row => {
+    const obj = {};
+    (row.c || []).forEach((cell, i) => {
+      obj[cols[i]] = (cell && cell.v !== null && cell.v !== undefined) ? cell.v : null;
+    });
+    return obj;
+  });
+}
+
+// ══════════════════════════════════════════════════════
+//  🚀  โหลดทุก Sheet พร้อมกัน แล้วสร้าง UI
+// ══════════════════════════════════════════════════════
 let allData = {};
 
-fetch("appointment.xlsx")
-  .then(r => r.arrayBuffer())
-  .then(buf => {
-    const wb = XLSX.read(buf);
-    wb.SheetNames.forEach(name => {
-      const rows = XLSX.utils.sheet_to_json(wb.Sheets[name]);
-      allData[name] = rows;
-    });
+Promise.all(SHEET_NAMES.map(name => fetchSheet(name)))
+  .then(results => {
+    results.forEach((rows, i) => { allData[SHEET_NAMES[i]] = rows; });
     buildUI();
   })
   .catch(err => {
-    document.getElementById('loading').innerHTML =
-      '<div style="color:#e74c3c;text-align:center">⚠️ ไม่สามารถโหลดไฟล์ appointment.xlsx ได้<br><small>กรุณาตรวจสอบว่าไฟล์อยู่ในโฟลเดอร์เดียวกัน</small></div>';
+    document.getElementById('loading').innerHTML = `
+      <div style="text-align:center;color:#e74c3c;padding:24px;">
+        <div style="font-size:2.5rem;margin-bottom:12px;">⚠️</div>
+        <strong style="font-size:1rem;">ไม่สามารถโหลดข้อมูลได้</strong>
+        <div style="color:#888;margin-top:10px;font-size:0.83rem;line-height:1.8;">
+          กรุณาตรวจสอบ:<br>
+          1. Google Sheet ถูกตั้งค่าเป็น <strong>Public (Anyone with link)</strong><br>
+          2. ชื่อ Sheet ตรงกับ <code>SHEET_NAMES</code> ในโค้ด<br>
+          3. เปิดไฟล์ผ่าน Web Server (ไม่ใช่เปิดไฟล์โดยตรง)<br>
+          <small style="color:#bbb;">${err.message}</small>
+        </div>
+      </div>`;
   });
 
+// ══════════════════════════════════════════════════════
+//  🏗️  BUILD UI
+// ══════════════════════════════════════════════════════
 function buildUI() {
   document.getElementById('loading').style.display = 'none';
   const dash = document.getElementById('dashboard');
   dash.style.display = 'block';
 
+  // นับวันเปิดรวมทุกแผนก
+  let totalOpenDays = 0;
+  SHEET_NAMES.forEach(n => {
+    allData[n].forEach(r => { if ((r['รวมรับ'] || 0) > 0) totalOpenDays++; });
+  });
+  document.getElementById('updateBadge').textContent = `เปิดรับ ${totalOpenDays} วัน`;
+
+  // สร้าง Tab ของแต่ละแผนก
   const tabsEl = document.getElementById('deptTabs');
-  const names = Object.keys(allData);
-
-  // Count total open slots for badge
-  let totalOpen = 0;
-  names.forEach(n => {
-    allData[n].forEach(r => { if ((r['รวมรับ'] || 0) > 0) totalOpen++; });
-  });
-  document.getElementById('updateBadge').textContent = `เปิดรับ ${totalOpen} วัน`;
-
-  // Add dept tabs
-  names.forEach(name => {
-    const a = document.createElement('a');
-    a.className = 'dept-tab';
-    a.dataset.tab = name;
-    a.innerHTML = `<span class="dot"></span> ${DEPT_ICONS[name] || ''} ${name}`;
-    a.onclick = () => switchTab(name, a);
-    tabsEl.appendChild(a);
+  SHEET_NAMES.forEach(name => {
+    const btn = document.createElement('button');
+    btn.className = 'dept-tab';
+    btn.dataset.tab = name;
+    btn.innerHTML = `<span class="dot"></span> ${DEPT_ICONS[name] || ''} ${name}`;
+    btn.onclick = () => switchTab(name, btn);
+    tabsEl.appendChild(btn);
   });
 
-  // Build overview
-  let overviewHtml = `<div class="overview-grid">`;
-  names.forEach(name => {
-    const rows = allData[name];
-    const openDays = rows.filter(r => (r['รวมรับ'] || 0) > 0).length;
+  // ── หน้าภาพรวม ──
+  let ov = `<div class="overview-grid">`;
+  SHEET_NAMES.forEach(name => {
+    const rows       = allData[name];
+    const openDays   = rows.filter(r => (r['รวมรับ'] || 0) > 0).length;
     const totalSlots = rows.reduce((s, r) => s + (r['รวมรับ'] || 0), 0);
-    overviewHtml += `
+    ov += `
       <div class="dept-card" onclick="switchTabByName('${name}')">
         <div class="dept-card-icon">${DEPT_ICONS[name] || '🏥'}</div>
         <div class="dept-card-name">${name}</div>
         <div class="dept-card-stat">
-          <div class="stat-item"><span class="stat-val">${openDays}</span><span class="stat-lbl">วันที่เปิด</span></div>
-          <div class="stat-item"><span class="stat-val">${totalSlots}</span><span class="stat-lbl">คิวรวม/สัปดาห์</span></div>
+          <div class="stat-item">
+            <span class="stat-val">${openDays}</span>
+            <span class="stat-lbl">วันที่เปิด</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-val">${totalSlots}</span>
+            <span class="stat-lbl">คิว/สัปดาห์</span>
+          </div>
         </div>
         <div class="dept-card-arrow">›</div>
       </div>`;
   });
-  overviewHtml += `</div>`;
+  ov += `</div>`;
+  ov += `<p class="section-title">📋 ตารางสรุปทุกแผนกรายสัปดาห์</p>`;
+  ov += buildWeeklyTable();
 
-  // Weekly summary table
-  const timeKeys = getTimeKeys();
-  overviewHtml += `
-    <div style="margin-bottom:16px;">
-      <h3 style="font-size:1rem;font-weight:700;color:var(--primary);margin-bottom:12px;">📋 ตารางสรุปรายสัปดาห์ทุกแผนก</h3>
-    </div>`;
-  overviewHtml += buildWeeklyTable(names);
+  dash.innerHTML += `<div class="dept-section show" id="tab-overview">${ov}</div>`;
 
-  dash.innerHTML += `<div class="dept-section show" id="tab-overview">${overviewHtml}</div>`;
-
-  // Build per-dept sections
-  names.forEach(name => {
-    const rows = allData[name];
-    const timeKeys = getTimeKeysForDept(rows);
-    const openDays = rows.filter(r => (r['รวมรับ'] || 0) > 0).length;
+  // ── หน้ารายแผนก ──
+  SHEET_NAMES.forEach(name => {
+    const rows       = allData[name];
+    const timeKeys   = getTimeKeys(rows);
+    const openDays   = rows.filter(r => (r['รวมรับ'] || 0) > 0).length;
     const totalSlots = rows.reduce((s, r) => s + (r['รวมรับ'] || 0), 0);
 
-    let html = `
+    const html = `
       <div class="dept-header">
         <div class="dept-color-bar"></div>
         <div>
@@ -511,50 +463,40 @@ function buildUI() {
       </div>
       <div class="view-toggle">
         <button class="view-btn active" onclick="switchView('${name}','cards',this)">🗓️ รายวัน</button>
-        <button class="view-btn" onclick="switchView('${name}','table',this)">📋 ตาราง</button>
+        <button class="view-btn"        onclick="switchView('${name}','table',this)">📋 ตาราง</button>
       </div>
       <div id="view-cards-${name}">${buildDayCards(rows, timeKeys)}</div>
       <div id="view-table-${name}" style="display:none;">${buildDeptTable(rows, timeKeys)}</div>
     `;
-
     dash.innerHTML += `<div class="dept-section" id="tab-${name}">${html}</div>`;
   });
 }
 
-function getTimeKeysForDept(rows) {
-  const keys = new Set();
-  rows.forEach(r => Object.keys(r).forEach(k => { if (k !== 'วัน' && k !== 'รวมรับ') keys.add(k); }));
-  return [...keys].sort();
-}
-function getTimeKeys() {
-  const keys = new Set();
-  Object.values(allData).forEach(rows =>
-    rows.forEach(r => Object.keys(r).forEach(k => { if (k !== 'วัน' && k !== 'รวมรับ') keys.add(k); }))
-  );
-  return [...keys].sort();
-}
-
+// ══════════════════════════════════════════════════════
+//  🃏  Day Cards
+// ══════════════════════════════════════════════════════
 function buildDayCards(rows, timeKeys) {
   const dayMap = {};
   rows.forEach(r => { dayMap[r['วัน']] = r; });
 
   let html = '<div class="day-grid">';
   DAYS_ORDER.forEach(day => {
-    const r = dayMap[day] || {};
-    const total = r['รวมรับ'] || 0;
+    const r      = dayMap[day] || {};
+    const total  = r['รวมรับ'] || 0;
     const isOpen = total > 0;
-    const activeSlots = timeKeys.filter(k => r[k]);
+    const active = timeKeys.filter(k => r[k]);
 
-    html += `<div class="day-card ${isOpen ? 'is-open' : 'is-closed'}">
-      <div class="day-head">
-        <span class="day-name">${day}</span>
-        <span class="status-badge ${isOpen ? 'open-badge' : 'closed-badge'}">${isOpen ? 'เปิด' : 'ปิด'}</span>
-      </div>
-      <div class="day-divider"></div>
-      <div class="day-body">`;
+    html += `
+      <div class="day-card ${isOpen ? 'is-open' : 'is-closed'}">
+        <div class="day-head">
+          <span class="day-name">${day}</span>
+          <span class="status-badge ${isOpen ? 'open-badge' : 'closed-badge'}">${isOpen ? 'เปิด' : 'ปิด'}</span>
+        </div>
+        <div class="day-divider"></div>
+        <div class="day-body">`;
 
-    if (isOpen && activeSlots.length > 0) {
-      activeSlots.forEach(k => {
+    if (isOpen && active.length) {
+      active.forEach(k => {
         if (r[k]) {
           html += `<div class="time-slot">
             <span class="slot-time">${k}</span>
@@ -568,17 +510,20 @@ function buildDayCards(rows, timeKeys) {
     }
 
     html += `
-        <div class="day-total">
-          <span class="total-label">รวมรับทั้งวัน</span>
-          <span class="total-num">${total} คน</span>
+          <div class="day-total">
+            <span class="total-label">รวมรับทั้งวัน</span>
+            <span class="total-num">${total} คน</span>
+          </div>
         </div>
-      </div>
-    </div>`;
+      </div>`;
   });
   html += '</div>';
   return html;
 }
 
+// ══════════════════════════════════════════════════════
+//  📋  Dept Table (มุมมองตาราง)
+// ══════════════════════════════════════════════════════
 function buildDeptTable(rows, timeKeys) {
   const dayMap = {};
   rows.forEach(r => { dayMap[r['วัน']] = r; });
@@ -589,15 +534,13 @@ function buildDeptTable(rows, timeKeys) {
   html += `<th>รวม</th></tr></thead><tbody>`;
 
   DAYS_ORDER.forEach(day => {
-    const r = dayMap[day] || {};
+    const r     = dayMap[day] || {};
     const total = r['รวมรับ'] || 0;
     html += `<tr><td>${day}</td>`;
     timeKeys.forEach(k => {
-      if (r[k]) {
-        html += `<td><span class="cell-open">✓ ${r[k]} คิว</span></td>`;
-      } else {
-        html += `<td><span class="cell-closed">—</span></td>`;
-      }
+      html += r[k]
+        ? `<td><span class="cell-open">✓ ${r[k]} คิว</span></td>`
+        : `<td><span class="cell-closed">—</span></td>`;
     });
     html += `<td><strong>${total}</strong></td></tr>`;
   });
@@ -606,32 +549,45 @@ function buildDeptTable(rows, timeKeys) {
   return html;
 }
 
-function buildWeeklyTable(names) {
+// ══════════════════════════════════════════════════════
+//  📋  Weekly Overview Table
+// ══════════════════════════════════════════════════════
+function buildWeeklyTable() {
   let html = `<div class="week-table-wrap"><table class="week-table">
     <thead><tr><th>แผนก</th>`;
   DAYS_ORDER.forEach(d => { html += `<th>${d}</th>`; });
   html += `<th>รวม/สัปดาห์</th></tr></thead><tbody>`;
 
-  names.forEach(name => {
-    const rows = allData[name];
+  SHEET_NAMES.forEach(name => {
+    const rows   = allData[name];
     const dayMap = {};
     rows.forEach(r => { dayMap[r['วัน']] = r; });
     const total = rows.reduce((s, r) => s + (r['รวมรับ'] || 0), 0);
     html += `<tr><td>${DEPT_ICONS[name] || ''} ${name}</td>`;
     DAYS_ORDER.forEach(day => {
-      const r = dayMap[day] || {};
-      const t = r['รวมรับ'] || 0;
-      if (t > 0) {
-        html += `<td><span class="cell-open">${t}</span></td>`;
-      } else {
-        html += `<td><span class="cell-closed">—</span></td>`;
-      }
+      const t = (dayMap[day] || {})['รวมรับ'] || 0;
+      html += t > 0
+        ? `<td><span class="cell-open">${t}</span></td>`
+        : `<td><span class="cell-closed">—</span></td>`;
     });
     html += `<td><strong>${total}</strong></td></tr>`;
   });
 
   html += `</tbody></table></div>`;
   return html;
+}
+
+// ══════════════════════════════════════════════════════
+//  🔧  Helpers
+// ══════════════════════════════════════════════════════
+function getTimeKeys(rows) {
+  const keys = new Set();
+  rows.forEach(r =>
+    Object.keys(r).forEach(k => {
+      if (k !== 'วัน' && k !== 'รวมรับ' && k.trim() !== '') keys.add(k);
+    })
+  );
+  return [...keys].sort();
 }
 
 function switchTab(name, el) {
@@ -639,7 +595,7 @@ function switchTab(name, el) {
   document.querySelectorAll('.dept-tab').forEach(t => t.classList.remove('active'));
   const sec = document.getElementById('tab-' + name);
   if (sec) sec.classList.add('show');
-  if (el) el.classList.add('active');
+  if (el)  el.classList.add('active');
 }
 function switchTabByName(name) {
   const tab = document.querySelector(`.dept-tab[data-tab="${name}"]`);
@@ -648,8 +604,9 @@ function switchTabByName(name) {
 }
 function switchView(dept, view, btn) {
   document.getElementById(`view-cards-${dept}`).style.display = view === 'cards' ? '' : 'none';
-  document.getElementById(`view-table-${dept}`).style.display = view === 'table' ? '' : 'none';
-  btn.closest('.view-toggle').querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(`view-table-${dept}`).style.display = view === 'table'  ? '' : 'none';
+  btn.closest('.view-toggle').querySelectorAll('.view-btn')
+     .forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
 }
 </script>
