@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ตารางเปิดจองนัดออนไลน์</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+
+<style>
+:root {
+  --primary: #1a4a8a;
+  --primary-light: #2563b0;
+  --primary-pale: #e8f0fb;
+  --accent: #0891b2;
+  --accent-light: #e0f2f7;
+  --success: #0f766e;
+  --success-bg: #e6f7f5;
+  --closed: #94a3b8;
+  --closed-bg: #f1f5f9;
+  --text-main: #1e2d40;
+  --text-muted: #64748b;
+  --border: #dde6f0;
+  --card-bg: #ffffff;
+  --surface: #f0f5fc;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Sarabun', 'IBM Plex Sans Thai', sans-serif;
+  background: var(--surface);
+  color: var(--text-main);
+  min-height: 100vh;
+}
+
+/* ─── HERO HEADER ─── */
+.hero {
+  background: linear-gradient(135deg, #0f2d5e 0%, #1a4a8a 45%, #1e6fa8 100%);
+  padding: 0;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Ccircle cx='30' cy='30' r='12'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+.hero-inner {
+  position: relative; z-index: 1;
+  max-width: 1140px; margin: 0 auto;
+  padding: 36px 24px 32px;
+  display: flex; align-items: center; gap: 20px;
+}
+.hero-icon {
+  width: 64px; height: 64px; flex-shrink: 0;
+  background: rgba(255,255,255,0.12);
+  border: 2px solid rgba(255,255,255,0.25);
+  border-radius: 18px;
+  display: flex; align-items: center; justify-content: center;
+}
+.hero-icon svg { width: 36px; height: 36px; fill: white; }
+.hero-text h1 {
+  font-size: clamp(1.35rem, 3vw, 1.75rem);
+  font-weight: 700; color: #fff;
+  letter-spacing: 0.01em; line-height: 1.25;
+}
+.hero-text p {
+  font-size: 0.9rem; color: rgba(255,255,255,0.72);
+  margin-top: 5px; font-weight: 400;
+}
+.hero-badge {
+  margin-left: auto; flex-shrink: 0;
+  background: rgba(255,255,255,0.13);
+  border: 1px solid rgba(255,255,255,0.22);
+  color: #fff; font-size: 0.78rem; font-weight: 500;
+  padding: 6px 14px; border-radius: 20px;
+  white-space: nowrap;
+}
+
+/* ─── NAV TABS ─── */
+.dept-nav {
+  background: var(--card-bg);
+  border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; z-index: 100;
+  box-shadow: 0 2px 8px rgba(26,74,138,0.07);
+}
+.dept-nav-inner {
+  max-width: 1140px; margin: 0 auto;
+  padding: 0 16px;
+  display: flex; gap: 0; overflow-x: auto;
+  scrollbar-width: none;
+}
+.dept-nav-inner::-webkit-scrollbar { display: none; }
+.dept-tab {
+  padding: 14px 18px; font-size: 0.85rem; font-weight: 500;
+  color: var(--text-muted); cursor: pointer;
+  border-bottom: 3px solid transparent;
+  white-space: nowrap; transition: all 0.2s;
+  display: flex; align-items: center; gap: 8px;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+.dept-tab:hover { color: var(--primary-light); }
+.dept-tab.active {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+  font-weight: 600;
+}
+.dept-tab .dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--closed);
+}
+.dept-tab.active .dot { background: var(--primary); }
+
+/* ─── MAIN CONTENT ─── */
+.main {
+  max-width: 1140px; margin: 0 auto;
+  padding: 28px 16px 48px;
+}
+
+/* ─── DEPT SECTION ─── */
+.dept-section { display: none; animation: fadeIn 0.3s ease; }
+.dept-section.show { display: block; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.dept-header {
+  display: flex; align-items: center; gap: 14px;
+  margin-bottom: 20px;
+}
+.dept-color-bar {
+  width: 5px; height: 42px; border-radius: 3px;
+  background: linear-gradient(180deg, var(--primary), var(--accent));
+}
+.dept-header h2 {
+  font-size: 1.25rem; font-weight: 700; color: var(--primary);
+  line-height: 1.2;
+}
+.dept-header p {
+  font-size: 0.82rem; color: var(--text-muted); margin-top: 2px;
+}
+.dept-summary {
+  margin-left: auto; display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end;
+}
+.summary-pill {
+  background: var(--primary-pale);
+  border: 1px solid #c5d8f5;
+  color: var(--primary); font-size: 0.78rem; font-weight: 600;
+  padding: 5px 13px; border-radius: 20px;
+}
+.summary-pill.open-days {
+  background: var(--success-bg);
+  border-color: #a7ddd7;
+  color: var(--success);
+}
+
+/* ─── DAY GRID ─── */
+.day-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 10px;
+}
+@media (max-width: 1000px) { .day-grid { grid-template-columns: repeat(4, 1fr); } }
+@media (max-width: 640px)  { .day-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 360px)  { .day-grid { grid-template-columns: 1fr 1fr; } }
+
+.day-card {
+  background: var(--card-bg);
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  transition: box-shadow 0.2s, transform 0.2s;
+  position: relative;
+}
+.day-card:hover { box-shadow: 0 6px 20px rgba(26,74,138,0.1); transform: translateY(-2px); }
+.day-card.is-open { border-color: #b8d4f0; }
+.day-card.is-closed { opacity: 0.68; }
+
+.day-head {
+  padding: 10px 12px 8px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.day-name {
+  font-weight: 700; font-size: 0.95rem; color: var(--text-main);
+}
+.status-badge {
+  font-size: 0.68rem; font-weight: 600; padding: 2px 8px;
+  border-radius: 10px; letter-spacing: 0.02em;
+}
+.open-badge {
+  background: var(--success-bg); color: var(--success);
+}
+.closed-badge {
+  background: var(--closed-bg); color: var(--closed);
+}
+
+.day-divider { height: 1px; background: var(--border); margin: 0 10px; }
+
+.day-body { padding: 10px 12px 12px; }
+
+.time-slot {
+  display: flex; align-items: center; gap: 7px;
+  padding: 5px 0;
+  border-bottom: 1px dashed #e8eef6;
+}
+.time-slot:last-child { border-bottom: none; }
+
+.slot-time {
+  font-size: 0.72rem; color: var(--text-muted);
+  font-weight: 500; min-width: 88px; flex-shrink: 0;
+}
+.slot-count {
+  font-size: 0.78rem; font-weight: 700;
+  color: var(--primary-light);
+  background: var(--primary-pale);
+  padding: 1px 8px; border-radius: 6px;
+}
+.slot-unit { font-size: 0.7rem; color: var(--text-muted); }
+
+.no-slot {
+  padding: 12px 0; text-align: center;
+  font-size: 0.78rem; color: var(--closed);
+}
+.no-slot-icon { font-size: 1.1rem; display: block; margin-bottom: 3px; }
+
+.day-total {
+  margin-top: 8px; padding-top: 8px;
+  border-top: 1.5px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.total-label { font-size: 0.72rem; color: var(--text-muted); }
+.total-num {
+  font-size: 0.88rem; font-weight: 700; color: var(--primary);
+}
+
+/* ─── OVERVIEW SECTION ─── */
+.overview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 14px; margin-bottom: 32px;
+}
+.dept-card {
+  background: var(--card-bg);
+  border: 1.5px solid var(--border);
+  border-radius: 14px; padding: 18px;
+  cursor: pointer; transition: all 0.2s;
+  position: relative; overflow: hidden;
+}
+.dept-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+}
+.dept-card:hover {
+  border-color: var(--primary-light);
+  box-shadow: 0 6px 24px rgba(26,74,138,0.12);
+  transform: translateY(-3px);
+}
+.dept-card-icon {
+  font-size: 1.6rem; margin-bottom: 10px;
+}
+.dept-card-name {
+  font-size: 0.88rem; font-weight: 700; color: var(--primary);
+  line-height: 1.35; margin-bottom: 10px;
+}
+.dept-card-stat {
+  display: flex; gap: 12px; flex-wrap: wrap;
+}
+.stat-item {
+  display: flex; flex-direction: column;
+}
+.stat-val { font-size: 1.1rem; font-weight: 700; color: var(--text-main); }
+.stat-lbl { font-size: 0.68rem; color: var(--text-muted); }
+.dept-card-arrow {
+  position: absolute; bottom: 14px; right: 14px;
+  color: var(--primary-light); font-size: 1rem; opacity: 0.5;
+}
+
+/* ─── WEEKLY VIEW ─── */
+.week-table-wrap {
+  background: var(--card-bg);
+  border: 1.5px solid var(--border);
+  border-radius: 14px; overflow: hidden;
+  margin-bottom: 14px;
+}
+.week-table {
+  width: 100%; border-collapse: collapse;
+  font-size: 0.8rem;
+}
+.week-table th {
+  background: var(--primary);
+  color: white; font-weight: 600;
+  padding: 10px 12px; text-align: center;
+  font-size: 0.78rem;
+}
+.week-table th:first-child { text-align: left; min-width: 120px; }
+.week-table td {
+  padding: 9px 12px; text-align: center;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+.week-table td:first-child {
+  font-weight: 600; text-align: left;
+  color: var(--text-main); background: #fafcff;
+}
+.week-table tr:last-child td { border-bottom: none; }
+.week-table tr:hover td { background: #f5f8ff; }
+.week-table tr:hover td:first-child { background: #edf2fc; }
+.cell-open {
+  display: inline-flex; align-items: center; gap: 4px;
+  background: var(--success-bg);
+  border: 1px solid #b0dcd8;
+  color: var(--success);
+  padding: 3px 9px; border-radius: 8px;
+  font-weight: 600; font-size: 0.76rem;
+}
+.cell-closed {
+  color: #c9d5e0;
+}
+
+/* ─── TABS INSIDE ─── */
+.view-toggle {
+  display: flex; gap: 6px; margin-bottom: 18px; flex-wrap: wrap;
+}
+.view-btn {
+  padding: 7px 16px; border-radius: 8px; font-size: 0.8rem; font-weight: 600;
+  border: 1.5px solid var(--border); background: var(--card-bg);
+  color: var(--text-muted); cursor: pointer; transition: all 0.18s;
+}
+.view-btn.active {
+  background: var(--primary); border-color: var(--primary); color: white;
+}
+.view-btn:hover:not(.active) { border-color: var(--primary-light); color: var(--primary); }
+
+/* ─── FOOTER ─── */
+.footer {
+  background: var(--primary);
+  color: rgba(255,255,255,0.65);
+  text-align: center; padding: 18px;
+  font-size: 0.78rem; margin-top: 20px;
+}
+.footer strong { color: white; }
+
+/* ─── LOADING ─── */
+#loading {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  min-height: 280px; gap: 16px; color: var(--text-muted);
+}
+.spinner {
+  width: 38px; height: 38px;
+  border: 3px solid var(--border);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-icon">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M19 3h-1V1h-2v2H8V1H6v2H5C3.9 3 3 3.9 3 5v16c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 18H5V9h14v12zm0-14H5V5h14v2zm-7 5h-2v3H7v2h3v3h2v-3h3v-2h-3v-3z"/>
+      </svg>
+    </div>
+    <div class="hero-text">
+      <h1>ตารางเปิดจองนัดออนไลน์</h1>
+      <p>ระบบนัดหมายออนไลน์ — เลือกแผนกและวันที่ต้องการ</p>
+    </div>
+    <div class="hero-badge" id="updateBadge">กำลังโหลด…</div>
+  </div>
+</div>
+
+<!-- NAV TABS -->
+<div class="dept-nav">
+  <div class="dept-nav-inner" id="deptTabs">
+    <a class="dept-tab active" data-tab="overview" onclick="switchTab('overview',this)">
+      <span class="dot"></span> ภาพรวม
+    </a>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+  <div id="loading">
+    <div class="spinner"></div>
+    <span>กำลังโหลดข้อมูลตารางนัด…</span>
+  </div>
+  <div id="dashboard" style="display:none;"></div>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <strong>ระบบจองนัดออนไลน์</strong> &nbsp;|&nbsp; ข้อมูลอัปเดตจากไฟล์ตารางนัด
+</div>
+
+<script>
+const DAYS_ORDER = ['จันทร์','อังคาร','พุธ','พฤหัสบดี','ศุกร์','เสาร์','อาทิตย์'];
+const DEPT_ICONS = {
+  'กายภาพบำบัด': '🦴',
+  'คลินิคฝากครรภ์': '🤰',
+  'ตรวจโรคทั่วไป': '🩺',
+  'ฝ่ายทันตสาธารณสุข': '🦷',
+  'แพทย์แผนไทย': '🌿',
+};
+const DEPT_DESCS = {
+  'กายภาพบำบัด': 'Physical Therapy',
+  'คลินิคฝากครรภ์': 'Antenatal Clinic',
+  'ตรวจโรคทั่วไป': 'General Practice',
+  'ฝ่ายทันตสาธารณสุข': 'Dental Clinic',
+  'แพทย์แผนไทย': 'Thai Traditional Medicine',
+};
+
+let allData = {};
+
+fetch("appointment.xlsx")
+  .then(r => r.arrayBuffer())
+  .then(buf => {
+    const wb = XLSX.read(buf);
+    wb.SheetNames.forEach(name => {
+      const rows = XLSX.utils.sheet_to_json(wb.Sheets[name]);
+      allData[name] = rows;
+    });
+    buildUI();
+  })
+  .catch(err => {
+    document.getElementById('loading').innerHTML =
+      '<div style="color:#e74c3c;text-align:center">⚠️ ไม่สามารถโหลดไฟล์ appointment.xlsx ได้<br><small>กรุณาตรวจสอบว่าไฟล์อยู่ในโฟลเดอร์เดียวกัน</small></div>';
+  });
+
+function buildUI() {
+  document.getElementById('loading').style.display = 'none';
+  const dash = document.getElementById('dashboard');
+  dash.style.display = 'block';
+
+  const tabsEl = document.getElementById('deptTabs');
+  const names = Object.keys(allData);
+
+  // Count total open slots for badge
+  let totalOpen = 0;
+  names.forEach(n => {
+    allData[n].forEach(r => { if ((r['รวมรับ'] || 0) > 0) totalOpen++; });
+  });
+  document.getElementById('updateBadge').textContent = `เปิดรับ ${totalOpen} วัน`;
+
+  // Add dept tabs
+  names.forEach(name => {
+    const a = document.createElement('a');
+    a.className = 'dept-tab';
+    a.dataset.tab = name;
+    a.innerHTML = `<span class="dot"></span> ${DEPT_ICONS[name] || ''} ${name}`;
+    a.onclick = () => switchTab(name, a);
+    tabsEl.appendChild(a);
+  });
+
+  // Build overview
+  let overviewHtml = `<div class="overview-grid">`;
+  names.forEach(name => {
+    const rows = allData[name];
+    const openDays = rows.filter(r => (r['รวมรับ'] || 0) > 0).length;
+    const totalSlots = rows.reduce((s, r) => s + (r['รวมรับ'] || 0), 0);
+    overviewHtml += `
+      <div class="dept-card" onclick="switchTabByName('${name}')">
+        <div class="dept-card-icon">${DEPT_ICONS[name] || '🏥'}</div>
+        <div class="dept-card-name">${name}</div>
+        <div class="dept-card-stat">
+          <div class="stat-item"><span class="stat-val">${openDays}</span><span class="stat-lbl">วันที่เปิด</span></div>
+          <div class="stat-item"><span class="stat-val">${totalSlots}</span><span class="stat-lbl">คิวรวม/สัปดาห์</span></div>
+        </div>
+        <div class="dept-card-arrow">›</div>
+      </div>`;
+  });
+  overviewHtml += `</div>`;
+
+  // Weekly summary table
+  const timeKeys = getTimeKeys();
+  overviewHtml += `
+    <div style="margin-bottom:16px;">
+      <h3 style="font-size:1rem;font-weight:700;color:var(--primary);margin-bottom:12px;">📋 ตารางสรุปรายสัปดาห์ทุกแผนก</h3>
+    </div>`;
+  overviewHtml += buildWeeklyTable(names);
+
+  dash.innerHTML += `<div class="dept-section show" id="tab-overview">${overviewHtml}</div>`;
+
+  // Build per-dept sections
+  names.forEach(name => {
+    const rows = allData[name];
+    const timeKeys = getTimeKeysForDept(rows);
+    const openDays = rows.filter(r => (r['รวมรับ'] || 0) > 0).length;
+    const totalSlots = rows.reduce((s, r) => s + (r['รวมรับ'] || 0), 0);
+
+    let html = `
+      <div class="dept-header">
+        <div class="dept-color-bar"></div>
+        <div>
+          <h2>${DEPT_ICONS[name] || ''} ${name}</h2>
+          <p>${DEPT_DESCS[name] || ''}</p>
+        </div>
+        <div class="dept-summary">
+          <div class="summary-pill open-days">เปิด ${openDays} วัน/สัปดาห์</div>
+          <div class="summary-pill">รวม ${totalSlots} คิว/สัปดาห์</div>
+        </div>
+      </div>
+      <div class="view-toggle">
+        <button class="view-btn active" onclick="switchView('${name}','cards',this)">🗓️ รายวัน</button>
+        <button class="view-btn" onclick="switchView('${name}','table',this)">📋 ตาราง</button>
+      </div>
+      <div id="view-cards-${name}">${buildDayCards(rows, timeKeys)}</div>
+      <div id="view-table-${name}" style="display:none;">${buildDeptTable(rows, timeKeys)}</div>
+    `;
+
+    dash.innerHTML += `<div class="dept-section" id="tab-${name}">${html}</div>`;
+  });
+}
+
+function getTimeKeysForDept(rows) {
+  const keys = new Set();
+  rows.forEach(r => Object.keys(r).forEach(k => { if (k !== 'วัน' && k !== 'รวมรับ') keys.add(k); }));
+  return [...keys].sort();
+}
+function getTimeKeys() {
+  const keys = new Set();
+  Object.values(allData).forEach(rows =>
+    rows.forEach(r => Object.keys(r).forEach(k => { if (k !== 'วัน' && k !== 'รวมรับ') keys.add(k); }))
+  );
+  return [...keys].sort();
+}
+
+function buildDayCards(rows, timeKeys) {
+  const dayMap = {};
+  rows.forEach(r => { dayMap[r['วัน']] = r; });
+
+  let html = '<div class="day-grid">';
+  DAYS_ORDER.forEach(day => {
+    const r = dayMap[day] || {};
+    const total = r['รวมรับ'] || 0;
+    const isOpen = total > 0;
+    const activeSlots = timeKeys.filter(k => r[k]);
+
+    html += `<div class="day-card ${isOpen ? 'is-open' : 'is-closed'}">
+      <div class="day-head">
+        <span class="day-name">${day}</span>
+        <span class="status-badge ${isOpen ? 'open-badge' : 'closed-badge'}">${isOpen ? 'เปิด' : 'ปิด'}</span>
+      </div>
+      <div class="day-divider"></div>
+      <div class="day-body">`;
+
+    if (isOpen && activeSlots.length > 0) {
+      activeSlots.forEach(k => {
+        if (r[k]) {
+          html += `<div class="time-slot">
+            <span class="slot-time">${k}</span>
+            <span class="slot-count">${r[k]}</span>
+            <span class="slot-unit">คิว</span>
+          </div>`;
+        }
+      });
+    } else {
+      html += `<div class="no-slot"><span class="no-slot-icon">🚫</span>ไม่เปิดรับนัด</div>`;
+    }
+
+    html += `
+        <div class="day-total">
+          <span class="total-label">รวมรับทั้งวัน</span>
+          <span class="total-num">${total} คน</span>
+        </div>
+      </div>
+    </div>`;
+  });
+  html += '</div>';
+  return html;
+}
+
+function buildDeptTable(rows, timeKeys) {
+  const dayMap = {};
+  rows.forEach(r => { dayMap[r['วัน']] = r; });
+
+  let html = `<div class="week-table-wrap"><table class="week-table">
+    <thead><tr><th>วัน</th>`;
+  timeKeys.forEach(k => { html += `<th>${k}</th>`; });
+  html += `<th>รวม</th></tr></thead><tbody>`;
+
+  DAYS_ORDER.forEach(day => {
+    const r = dayMap[day] || {};
+    const total = r['รวมรับ'] || 0;
+    html += `<tr><td>${day}</td>`;
+    timeKeys.forEach(k => {
+      if (r[k]) {
+        html += `<td><span class="cell-open">✓ ${r[k]} คิว</span></td>`;
+      } else {
+        html += `<td><span class="cell-closed">—</span></td>`;
+      }
+    });
+    html += `<td><strong>${total}</strong></td></tr>`;
+  });
+
+  html += `</tbody></table></div>`;
+  return html;
+}
+
+function buildWeeklyTable(names) {
+  let html = `<div class="week-table-wrap"><table class="week-table">
+    <thead><tr><th>แผนก</th>`;
+  DAYS_ORDER.forEach(d => { html += `<th>${d}</th>`; });
+  html += `<th>รวม/สัปดาห์</th></tr></thead><tbody>`;
+
+  names.forEach(name => {
+    const rows = allData[name];
+    const dayMap = {};
+    rows.forEach(r => { dayMap[r['วัน']] = r; });
+    const total = rows.reduce((s, r) => s + (r['รวมรับ'] || 0), 0);
+    html += `<tr><td>${DEPT_ICONS[name] || ''} ${name}</td>`;
+    DAYS_ORDER.forEach(day => {
+      const r = dayMap[day] || {};
+      const t = r['รวมรับ'] || 0;
+      if (t > 0) {
+        html += `<td><span class="cell-open">${t}</span></td>`;
+      } else {
+        html += `<td><span class="cell-closed">—</span></td>`;
+      }
+    });
+    html += `<td><strong>${total}</strong></td></tr>`;
+  });
+
+  html += `</tbody></table></div>`;
+  return html;
+}
+
+function switchTab(name, el) {
+  document.querySelectorAll('.dept-section').forEach(s => s.classList.remove('show'));
+  document.querySelectorAll('.dept-tab').forEach(t => t.classList.remove('active'));
+  const sec = document.getElementById('tab-' + name);
+  if (sec) sec.classList.add('show');
+  if (el) el.classList.add('active');
+}
+function switchTabByName(name) {
+  const tab = document.querySelector(`.dept-tab[data-tab="${name}"]`);
+  switchTab(name, tab);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function switchView(dept, view, btn) {
+  document.getElementById(`view-cards-${dept}`).style.display = view === 'cards' ? '' : 'none';
+  document.getElementById(`view-table-${dept}`).style.display = view === 'table' ? '' : 'none';
+  btn.closest('.view-toggle').querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+</script>
+
+</body>
+</html>
