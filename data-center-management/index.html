@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="th" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PDF Viewer — fileword.pdf</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    /* ─── CSS Variables ─── */
+    :root {
+      --bg: #f4f1eb;
+      --surface: #ffffff;
+      --surface2: #ede9e0;
+      --border: #d4cfc4;
+      --text: #1a1714;
+      --text-muted: #7a7469;
+      --accent: #c84b2f;
+      --accent-dark: #a33a21;
+      --accent-light: #f5e8e4;
+      --shadow: 0 4px 24px rgba(26,23,20,.10);
+      --shadow-lg: 0 12px 48px rgba(26,23,20,.18);
+      --radius: 10px;
+      --header-h: 68px;
+      --transition: .22s cubic-bezier(.4,0,.2,1);
+    }
+    [data-theme="dark"] {
+      --bg: #131210;
+      --surface: #1e1c19;
+      --surface2: #26231f;
+      --border: #38342e;
+      --text: #f0ece4;
+      --text-muted: #8c8479;
+      --accent: #e05c3a;
+      --accent-dark: #c84b2f;
+      --accent-light: #2e1f1a;
+      --shadow: 0 4px 24px rgba(0,0,0,.40);
+      --shadow-lg: 0 12px 48px rgba(0,0,0,.55);
+    }
+
+    /* ─── Reset & Base ─── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; width: 100%; }
+    body {
+      font-family: 'Sarabun', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      transition: background var(--transition), color var(--transition);
+      min-height: 100vh;
+    }
+
+    /* ─── Scrollbar ─── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--surface2); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 999px; }
+
+    /* ─── Header ─── */
+    header {
+      height: var(--header-h);
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      gap: 16px;
+      box-shadow: var(--shadow);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      flex-shrink: 0;
+    }
+
+    .logo-mark {
+      width: 36px; height: 36px;
+      background: var(--accent);
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+    }
+    .logo-mark svg { width: 20px; height: 20px; fill: #fff; }
+
+    .file-info {
+      flex: 1;
+      min-width: 0;
+    }
+    .file-name {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: .85rem;
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .file-label {
+      font-size: .72rem;
+      color: var(--text-muted);
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      margin-top: 1px;
+    }
+
+    /* ─── Button Group ─── */
+    .btn-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      border: 1.5px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      font-family: 'Sarabun', sans-serif;
+      font-size: .82rem;
+      font-weight: 600;
+      padding: 8px 14px;
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: all var(--transition);
+      white-space: nowrap;
+      text-decoration: none;
+    }
+    .btn svg { width: 16px; height: 16px; flex-shrink: 0; }
+    .btn:hover {
+      background: var(--surface2);
+      border-color: var(--accent);
+      color: var(--accent);
+      box-shadow: 0 2px 10px rgba(200,75,47,.15);
+      transform: translateY(-1px);
+    }
+    .btn:active { transform: translateY(0); }
+
+    .btn-primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+    .btn-primary:hover {
+      background: var(--accent-dark);
+      border-color: var(--accent-dark);
+      color: #fff;
+    }
+
+    .btn-icon {
+      padding: 8px 10px;
+    }
+    .btn-icon span { display: none; }
+
+    /* ─── Dark mode toggle ─── */
+    .theme-toggle {
+      width: 36px; height: 36px;
+      border-radius: 8px;
+      border: 1.5px solid var(--border);
+      background: var(--surface);
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      transition: all var(--transition);
+      flex-shrink: 0;
+    }
+    .theme-toggle:hover { border-color: var(--accent); background: var(--surface2); }
+    .theme-toggle svg { width: 18px; height: 18px; stroke: var(--text); fill: none; stroke-width: 2; }
+    .icon-sun { display: none; }
+    .icon-moon { display: block; }
+    [data-theme="dark"] .icon-sun { display: block; }
+    [data-theme="dark"] .icon-moon { display: none; }
+
+    /* ─── Viewer Area ─── */
+    .viewer-wrap {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      padding: 16px;
+      gap: 12px;
+    }
+
+    /* Status Bar */
+    .status-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 2px;
+    }
+    .status-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #4caf7d;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%,100% { opacity: 1; } 50% { opacity: .45; }
+    }
+    .status-text { font-size: .78rem; color: var(--text-muted); }
+
+    /* PDF Container */
+    .pdf-container {
+      flex: 1;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: var(--shadow-lg);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Iframe / Embed */
+    #pdf-iframe {
+      width: 100%;
+      flex: 1;
+      border: none;
+      display: block;
+      min-height: 0;
+    }
+
+    /* ─── Fallback: PDF.js ─── */
+    #pdfjs-viewer {
+      display: none;
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px 16px;
+      background: var(--surface2);
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+    #pdfjs-viewer.active { display: flex; }
+
+    .pdfjs-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 14px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      box-shadow: var(--shadow);
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .pdfjs-controls .btn { font-size: .78rem; padding: 6px 12px; }
+    .page-info { font-size: .82rem; color: var(--text-muted); min-width: 80px; text-align: center; }
+
+    #canvas-container { display: flex; flex-direction: column; gap: 10px; align-items: center; width: 100%; }
+
+    canvas.pdf-page {
+      max-width: 100%;
+      border-radius: 6px;
+      box-shadow: var(--shadow);
+      display: block;
+    }
+
+    /* ─── Loading Overlay ─── */
+    .loading-overlay {
+      position: absolute;
+      inset: 0;
+      background: var(--surface);
+      display: grid;
+      place-items: center;
+      z-index: 20;
+      border-radius: 12px;
+      transition: opacity .3s, visibility .3s;
+    }
+    .loading-overlay.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+
+    .loader {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+    .loader-ring {
+      width: 44px; height: 44px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loader-text { font-size: .85rem; color: var(--text-muted); }
+
+    /* ─── Error State ─── */
+    .error-state {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 48px 24px;
+      text-align: center;
+      flex: 1;
+    }
+    .error-state.active { display: flex; }
+    .error-icon {
+      width: 56px; height: 56px;
+      background: var(--accent-light);
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+    }
+    .error-icon svg { width: 28px; height: 28px; stroke: var(--accent); fill: none; stroke-width: 2; }
+    .error-title { font-size: 1.1rem; font-weight: 700; }
+    .error-sub { font-size: .85rem; color: var(--text-muted); max-width: 340px; line-height: 1.6; }
+
+    /* ─── Toast ─── */
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(12px);
+      background: var(--text);
+      color: var(--bg);
+      font-size: .82rem;
+      padding: 10px 20px;
+      border-radius: 999px;
+      box-shadow: var(--shadow-lg);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .25s, transform .25s;
+      white-space: nowrap;
+      z-index: 9999;
+    }
+    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* ─── Responsive ─── */
+    @media (max-width: 640px) {
+      :root { --header-h: 60px; }
+      header { padding: 0 12px; gap: 10px; }
+      .btn { padding: 7px 10px; font-size: .78rem; gap: 5px; }
+      .btn .btn-label { display: none; }
+      .viewer-wrap { padding: 10px; }
+      .pdfjs-controls { gap: 6px; }
+    }
+
+    @media (min-width: 641px) {
+      .btn-icon span { display: inline; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ═══ HEADER ═══ -->
+  <header>
+    <div class="logo-mark">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 1.5L18.5 9H13V3.5zM6 20V4h5v7h7v9H6z"/>
+      </svg>
+    </div>
+
+    <div class="file-info">
+      <div class="file-name" id="file-name-display">fileword.pdf</div>
+      <div class="file-label">PDF Document Viewer</div>
+    </div>
+
+    <div class="btn-group">
+      <!-- ดาวน์โหลด -->
+      <a id="btn-download" class="btn" href="fileword.pdf" download title="ดาวน์โหลดไฟล์">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+        <span class="btn-label">ดาวน์โหลด</span>
+      </a>
+
+      <!-- เปิดแท็บใหม่ -->
+      <button class="btn" id="btn-newtab" title="เปิดในแท็บใหม่">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
+        </svg>
+        <span class="btn-label">แท็บใหม่</span>
+      </button>
+
+      <!-- เต็มจอ -->
+      <button class="btn btn-primary" id="btn-fullscreen" title="เปิดเต็มจอ">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/>
+        </svg>
+        <span class="btn-label">เต็มจอ</span>
+      </button>
+
+      <!-- Dark mode -->
+      <button class="theme-toggle" id="btn-theme" title="เปลี่ยนธีม" aria-label="Toggle dark mode">
+        <!-- Sun -->
+        <svg class="icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        <!-- Moon -->
+        <svg class="icon-moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- ═══ VIEWER ═══ -->
+  <main class="viewer-wrap">
+
+    <div class="status-bar">
+      <span class="status-dot" id="status-dot"></span>
+      <span class="status-text" id="status-text">กำลังโหลดไฟล์ PDF...</span>
+    </div>
+
+    <div class="pdf-container" id="pdf-container">
+
+      <!-- Loading Overlay -->
+      <div class="loading-overlay" id="loading-overlay">
+        <div class="loader">
+          <div class="loader-ring"></div>
+          <div class="loader-text">กำลังโหลด PDF...</div>
+        </div>
+      </div>
+
+      <!-- Primary: iframe -->
+      <iframe
+        id="pdf-iframe"
+        src="fileword.pdf"
+        title="PDF Viewer"
+        aria-label="PDF Document"
+      ></iframe>
+
+      <!-- Error State -->
+      <div class="error-state" id="error-state">
+        <div class="error-icon">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        </div>
+        <div class="error-title">ไม่สามารถแสดง PDF ได้โดยตรง</div>
+        <div class="error-sub">Browser นี้ไม่รองรับการแสดง PDF แบบ Embed — กำลังเปลี่ยนไปใช้ PDF.js...</div>
+      </div>
+
+      <!-- Fallback: PDF.js canvas viewer -->
+      <div id="pdfjs-viewer">
+        <div class="pdfjs-controls">
+          <button class="btn" id="pdfjs-prev">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14"><polyline points="15 18 9 12 15 6"/></svg>
+            ก่อนหน้า
+          </button>
+          <span class="page-info" id="page-info">หน้า — / —</span>
+          <button class="btn" id="pdfjs-next">
+            ถัดไป
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+          <button class="btn" id="pdfjs-zoomin">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+            ขยาย
+          </button>
+          <button class="btn" id="pdfjs-zoomout">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+            ย่อ
+          </button>
+          <button class="btn" id="pdfjs-all" title="แสดงทุกหน้า">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+            ทุกหน้า
+          </button>
+        </div>
+        <div id="canvas-container"></div>
+      </div>
+
+    </div><!-- /pdf-container -->
+  </main>
+
+  <!-- Toast notification -->
+  <div id="toast"></div>
+
+  <!-- ═══ PDF.js CDN ═══ -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.2.67/pdf.min.mjs" type="module"></script>
+
+  <script type="module">
+    /* ─────────────────────────────────────────────
+       CONFIG — แก้ชื่อไฟล์ตรงนี้
+    ───────────────────────────────────────────── */
+    const PDF_FILE = 'fileword.pdf';
+
+    /* ─── Elements ─── */
+    const iframe       = document.getElementById('pdf-iframe');
+    const loadingEl    = document.getElementById('loading-overlay');
+    const errorEl      = document.getElementById('error-state');
+    const pdfjsViewer  = document.getElementById('pdfjs-viewer');
+    const canvasWrap   = document.getElementById('canvas-container');
+    const pageInfo     = document.getElementById('page-info');
+    const statusDot    = document.getElementById('status-dot');
+    const statusText   = document.getElementById('status-text');
+    const btnTheme     = document.getElementById('btn-theme');
+    const btnFS        = document.getElementById('btn-fullscreen');
+    const btnNewTab    = document.getElementById('btn-newtab');
+    const btnDownload  = document.getElementById('btn-download');
+    const pdfContainer = document.getElementById('pdf-container');
+
+    /* Update filename display */
+    document.getElementById('file-name-display').textContent = PDF_FILE;
+    btnDownload.href = PDF_FILE;
+
+    /* ─── Toast ─── */
+    function showToast(msg, ms = 2400) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), ms);
+    }
+
+    /* ─── Status ─── */
+    function setStatus(ok, msg) {
+      statusDot.style.background = ok ? '#4caf7d' : '#e05c3a';
+      statusText.textContent = msg;
+    }
+
+    /* ─── Dark Mode ─── */
+    const saved = localStorage.getItem('pdfviewer-theme');
+    if (saved) document.documentElement.setAttribute('data-theme', saved);
+
+    btnTheme.addEventListener('click', () => {
+      const cur = document.documentElement.getAttribute('data-theme');
+      const next = cur === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('pdfviewer-theme', next);
+      showToast(next === 'dark' ? '🌙 Dark Mode เปิดแล้ว' : '☀️ Light Mode เปิดแล้ว');
+    });
+
+    /* ─── Fullscreen ─── */
+    btnFS.addEventListener('click', () => {
+      const el = pdfContainer;
+      if (!document.fullscreenElement) {
+        el.requestFullscreen?.() || el.webkitRequestFullscreen?.();
+        btnFS.querySelector('.btn-label').textContent = 'ออกจากเต็มจอ';
+        showToast('⛶ เข้าสู่โหมดเต็มจอ');
+      } else {
+        document.exitFullscreen?.();
+        btnFS.querySelector('.btn-label').textContent = 'เต็มจอ';
+        showToast('✕ ออกจากโหมดเต็มจอ');
+      }
+    });
+    document.addEventListener('fullscreenchange', () => {
+      if (!document.fullscreenElement) {
+        btnFS.querySelector('.btn-label').textContent = 'เต็มจอ';
+      }
+    });
+
+    /* ─── New Tab ─── */
+    btnNewTab.addEventListener('click', () => {
+      window.open(PDF_FILE, '_blank');
+      showToast('📄 เปิดในแท็บใหม่แล้ว');
+    });
+
+    /* ─── PDF.js Fallback Logic ─── */
+    let pdfDoc = null, currentPage = 1, scale = 1.4, showAll = false;
+
+    async function loadPDFjs() {
+      try {
+        const { GlobalWorkerOptions, getDocument } = await import(
+          'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.2.67/pdf.min.mjs'
+        );
+        GlobalWorkerOptions.workerSrc =
+          'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.2.67/pdf.worker.min.mjs';
+
+        pdfDoc = await getDocument(PDF_FILE).promise;
+        loadingEl.classList.add('hidden');
+        iframe.style.display = 'none';
+        pdfjsViewer.classList.add('active');
+        renderPage(currentPage);
+        setStatus(true, `โหลดสำเร็จด้วย PDF.js · ${pdfDoc.numPages} หน้า`);
+      } catch (e) {
+        loadingEl.classList.add('hidden');
+        iframe.style.display = 'none';
+        errorEl.classList.add('active');
+        setStatus(false, 'ไม่สามารถโหลดไฟล์ PDF ได้ — โปรดตรวจสอบชื่อไฟล์');
+      }
+    }
+
+    async function renderPage(num) {
+      if (!pdfDoc) return;
+      canvasWrap.innerHTML = '';
+      const page = await pdfDoc.getPage(num);
+      const vp = page.getViewport({ scale });
+      const canvas = document.createElement('canvas');
+      canvas.className = 'pdf-page';
+      canvas.width = vp.width; canvas.height = vp.height;
+      canvasWrap.appendChild(canvas);
+      await page.render({ canvasContext: canvas.getContext('2d'), viewport: vp }).promise;
+      pageInfo.textContent = `หน้า ${num} / ${pdfDoc.numPages}`;
+    }
+
+    async function renderAll() {
+      if (!pdfDoc) return;
+      canvasWrap.innerHTML = '';
+      for (let i = 1; i <= pdfDoc.numPages; i++) {
+        const page = await pdfDoc.getPage(i);
+        const vp = page.getViewport({ scale });
+        const canvas = document.createElement('canvas');
+        canvas.className = 'pdf-page';
+        canvas.width = vp.width; canvas.height = vp.height;
+        canvasWrap.appendChild(canvas);
+        await page.render({ canvasContext: canvas.getContext('2d'), viewport: vp }).promise;
+      }
+      pageInfo.textContent = `ทุกหน้า (${pdfDoc.numPages} หน้า)`;
+    }
+
+    document.getElementById('pdfjs-prev').addEventListener('click', () => {
+      if (showAll || currentPage <= 1) return;
+      currentPage--; renderPage(currentPage);
+    });
+    document.getElementById('pdfjs-next').addEventListener('click', () => {
+      if (showAll || !pdfDoc || currentPage >= pdfDoc.numPages) return;
+      currentPage++; renderPage(currentPage);
+    });
+    document.getElementById('pdfjs-zoomin').addEventListener('click', () => {
+      scale = Math.min(scale + 0.25, 3);
+      showAll ? renderAll() : renderPage(currentPage);
+    });
+    document.getElementById('pdfjs-zoomout').addEventListener('click', () => {
+      scale = Math.max(scale - 0.25, 0.5);
+      showAll ? renderAll() : renderPage(currentPage);
+    });
+    document.getElementById('pdfjs-all').addEventListener('click', () => {
+      showAll = !showAll;
+      document.getElementById('pdfjs-all').textContent = showAll ? 'ทีละหน้า' : 'ทุกหน้า';
+      showAll ? renderAll() : renderPage(currentPage);
+    });
+
+    /* ─── Keyboard Shortcuts ─── */
+    document.addEventListener('keydown', e => {
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+        document.getElementById('pdfjs-next').click();
+      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+        document.getElementById('pdfjs-prev').click();
+      } else if (e.key === 'f' || e.key === 'F') {
+        btnFS.click();
+      }
+    });
+
+    /* ─── Iframe Load Detection ─── */
+    let iframeLoaded = false;
+
+    iframe.addEventListener('load', () => {
+      iframeLoaded = true;
+      loadingEl.classList.add('hidden');
+      setStatus(true, `โหลดสำเร็จ · ${PDF_FILE}`);
+    });
+
+    iframe.addEventListener('error', () => {
+      if (!iframeLoaded) loadPDFjs();
+    });
+
+    /* ─── Timeout Fallback (mobile/Firefox) ─── */
+    setTimeout(() => {
+      if (!iframeLoaded) {
+        errorEl.classList.add('active');
+        iframe.style.display = 'none';
+        setTimeout(loadPDFjs, 400);
+      }
+    }, 3500);
+
+    /* ─── Check PDF support via object test ─── */
+    const supported = navigator.mimeTypes && navigator.mimeTypes['application/pdf'];
+    if (!supported && !(/Chrome|CriOS/.test(navigator.userAgent))) {
+      setTimeout(() => {
+        if (!iframeLoaded) loadPDFjs();
+      }, 800);
+    }
+
+  </script>
+</body>
+</html>
