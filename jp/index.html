@@ -1,1 +1,259 @@
+```html
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <title>JP Files</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f7fa;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: #1565c0;
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            margin: 0 0 5px;
+        }
+
+        .header p {
+            margin: 0;
+            opacity: 0.9;
+        }
+
+        .file {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 6px rgba(0,0,0,.08);
+        }
+
+        .file-name {
+            font-size: 17px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            word-break: break-all;
+        }
+
+        .url {
+            display: flex;
+            gap: 8px;
+        }
+
+        .url input {
+            flex: 1;
+            min-width: 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            background: #f8f9fa;
+        }
+
+        button {
+            border: 0;
+            background: #1565c0;
+            color: white;
+            padding: 10px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #0d47a1;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 30px;
+        }
+
+        .empty {
+            background: white;
+            padding: 30px;
+            text-align: center;
+            border-radius: 10px;
+        }
+
+        .error {
+            background: #ffebee;
+            color: #c62828;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        @media (max-width: 600px) {
+            .url {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <h1>📁 JP Files</h1>
+        <p>รายการไฟล์ใน GitHub Repository</p>
+    </div>
+
+    <div id="files">
+        <div class="loading">กำลังโหลดข้อมูล...</div>
+    </div>
+
+</div>
+
+<script>
+
+    const owner = "chummak";
+    const repo = "web";
+    const branch = "main";
+    const folder = "jp";
+
+    const apiUrl =
+        `https://api.github.com/repos/${owner}/${repo}/contents/${folder}?ref=${branch}`;
+
+    const rawUrl =
+        `https://raw.githubusercontent.com/${owner}/${repo}/refs/heads/${branch}/${folder}/`;
+
+    async function loadFiles() {
+
+        const container = document.getElementById("files");
+
+        try {
+
+            const response = await fetch(apiUrl);
+
+            if (!response.ok) {
+                throw new Error("ไม่สามารถโหลดข้อมูลจาก GitHub ได้");
+            }
+
+            const files = await response.json();
+
+            const onlyFiles = files
+                .filter(file => file.type === "file")
+                .sort((a, b) => a.name.localeCompare(b.name));
+
+            if (onlyFiles.length === 0) {
+
+                container.innerHTML =
+                    `<div class="empty">ไม่พบไฟล์ในโฟลเดอร์นี้</div>`;
+
+                return;
+            }
+
+            container.innerHTML = "";
+
+            onlyFiles.forEach(file => {
+
+                const url = rawUrl + encodeURIComponent(file.name);
+
+                const div = document.createElement("div");
+
+                div.className = "file";
+
+                div.innerHTML = `
+                    <div class="file-name">
+                        📄 ${escapeHtml(file.name)}
+                    </div>
+
+                    <div class="url">
+
+                        <input
+                            type="text"
+                            value="${url}"
+                            readonly
+                            onclick="this.select()"
+                        >
+
+                        <button onclick="copyUrl('${url}', this)">
+                            📋 คัดลอก
+                        </button>
+
+                    </div>
+                `;
+
+                container.appendChild(div);
+
+            });
+
+        } catch (error) {
+
+            container.innerHTML = `
+                <div class="error">
+                    ❌ ${error.message}
+                </div>
+            `;
+
+        }
+    }
+
+
+    async function copyUrl(url, button) {
+
+        try {
+
+            await navigator.clipboard.writeText(url);
+
+            const oldText = button.innerHTML;
+
+            button.innerHTML = "✓ คัดลอกแล้ว";
+
+            setTimeout(() => {
+                button.innerHTML = oldText;
+            }, 1500);
+
+        } catch (error) {
+
+            alert("ไม่สามารถคัดลอกได้");
+
+        }
+    }
+
+
+    function escapeHtml(text) {
+
+        return text
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+
+    }
+
+
+    loadFiles();
+
+</script>
+
+</body>
+</html>
+```
