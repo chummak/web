@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>JP Files</title>
+    <title> Files</title>
     <style>
         * {
             box-sizing: border-box;
@@ -54,14 +54,15 @@
             margin-bottom: 15px;
             display: flex;
             gap: 10px;
-            flex-wrap: wrap;
+            flex-wrap: nowrap;
+            align-items: center;
             box-shadow:
                 0 2px 8px rgba(0, 0, 0, .06);
         }
 
         .search {
             flex: 1;
-            min-width: 250px;
+            min-width: 0;
         }
 
         .search input,
@@ -74,6 +75,11 @@
             font-size: 14px;
         }
 
+        .toolbar select {
+            width: 150px;
+            flex-shrink: 0;
+        }
+
         .toolbar button {
             border: 0;
             background: #1565c0;
@@ -81,6 +87,8 @@
             padding: 10px 16px;
             border-radius: 8px;
             cursor: pointer;
+            white-space: nowrap;
+            flex-shrink: 0;
         }
 
         .toolbar button:hover {
@@ -261,6 +269,18 @@
             .summary {
                 grid-template-columns: 1fr;
             }
+
+            .toolbar {
+                flex-wrap: nowrap;
+            }
+
+            .toolbar select {
+                width: 120px;
+            }
+
+            .toolbar button {
+                padding: 10px 12px;
+            }
         }
     </style>
 </head>
@@ -269,17 +289,19 @@
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <h1>📁 JP Files</h1>
+            <h1>📁 Files</h1>
             <p>
                 รายการไฟล์จาก GitHub Repository
-                <strong>chummak/web / jp</strong>
+                <strong>chummak/web / </strong>
             </p>
         </div>
+
         <!-- Toolbar -->
         <div class="toolbar">
             <div class="search">
                 <input type="text" id="search" placeholder="🔍 ค้นหาชื่อไฟล์..." oninput="renderFiles()">
             </div>
+
             <select id="sort" onchange="renderFiles()">
                 <option value="name">
                     🔤 ชื่อไฟล์
@@ -288,10 +310,12 @@
                     📦 ขนาด
                 </option>
             </select>
+
             <button onclick="loadFiles()">
                 🔄 รีเฟรช
             </button>
         </div>
+
         <!-- Summary -->
         <div class="summary">
             <div class="summary-box">
@@ -302,6 +326,7 @@
                     -
                 </div>
             </div>
+
             <div class="summary-box">
                 <div class="summary-title">
                     ขนาดรวม
@@ -310,6 +335,7 @@
                     -
                 </div>
             </div>
+
             <div class="summary-box">
                 <div class="summary-title">
                     Repository
@@ -319,6 +345,7 @@
                 </div>
             </div>
         </div>
+
         <!-- Files -->
         <div id="files">
             <div class="loading">
@@ -326,6 +353,7 @@
             </div>
         </div>
     </div>
+
     <script>
         /* =========================================================
            GitHub
@@ -333,26 +361,30 @@
         const owner = "chummak";
         const repo = "web";
         const branch = "main";
-        const folder = "jp";
+        const folder = "";
         const apiUrl =
             `https://api.github.com/repos/${owner}/${repo}/contents/${folder}?ref=${branch}`;
         const rawBase =
             `https://raw.githubusercontent.com/${owner}/${repo}/refs/heads/${branch}/${folder}/`;
+
         /* =========================================================
            Data
         ========================================================= */
         let files = [];
+
         /* =========================================================
            Load
         ========================================================= */
         async function loadFiles() {
             const container =
                 document.getElementById("files");
+
             container.innerHTML = `
         <div class="loading">
             ⏳ กำลังโหลดข้อมูลจาก GitHub...
         </div>
     `;
+
             try {
                 const response =
                     await fetch(apiUrl, {
@@ -361,18 +393,22 @@
                                 "application/vnd.github+json"
                         }
                     });
+
                 if (response.status === 403) {
                     throw new Error(
                         "GitHub API ถูกจำกัดการใช้งานชั่วคราว (Rate Limit)"
                     );
                 }
+
                 if (!response.ok) {
                     throw new Error(
                         `GitHub API Error: ${response.status}`
                     );
                 }
+
                 const data =
                     await response.json();
+
                 /*
                  * เฉพาะไฟล์
                  */
@@ -380,6 +416,7 @@
                     data.filter(
                         file => file.type === "file"
                     );
+
                 /*
                  * เรียงไฟล์ตามข้อมูลที่ GitHub
                  * ส่งกลับมา
@@ -390,6 +427,7 @@
                  */
                 updateSummary();
                 renderFiles();
+
             } catch (error) {
                 container.innerHTML = `
             <div class="error">
@@ -405,26 +443,31 @@
         `;
             }
         }
+
         /* =========================================================
            Render
         ========================================================= */
         function renderFiles() {
             const container =
                 document.getElementById("files");
+
             const keyword =
                 document
                     .getElementById("search")
                     .value
                     .toLowerCase()
                     .trim();
+
             let result =
                 files.filter(file =>
                     file.name
                         .toLowerCase()
                         .includes(keyword)
                 );
+
             const sort =
                 document.getElementById("sort").value;
+
             if (sort === "name") {
                 result.sort((a, b) =>
                     a.name.localeCompare(
@@ -437,6 +480,7 @@
                     )
                 );
             }
+
             if (sort === "size") {
                 result.sort(
                     (a, b) =>
@@ -444,6 +488,7 @@
                         (a.size || 0)
                 );
             }
+
             if (result.length === 0) {
                 container.innerHTML = `
             <div class="empty">
@@ -452,6 +497,7 @@
         `;
                 return;
             }
+
             let html = `
         <div class="table-container">
             <table>
@@ -467,14 +513,18 @@
                 </thead>
                 <tbody>
     `;
+
             result.forEach(file => {
                 const rawUrl =
                     rawBase +
                     encodeURIComponent(file.name);
+
                 const extension =
                     getExtension(file.name);
+
                 const type =
                     getFileType(file.name);
+
                 const preview =
                     isImage(file.name)
                         ?
@@ -493,21 +543,25 @@
             `
                         :
                         getFileIcon(file.name);
+
                 html += `
             <tr>
                 <!-- Preview -->
                 <td>
                     ${preview}
                 </td>
+
                 <!-- Name -->
                 <td>
                     <div class="file-name">
                         ${escapeHtml(file.name)}
                     </div>
+
                     <div class="raw-url">
                         ${escapeHtml(rawUrl)}
                     </div>
                 </td>
+
                 <!-- Type -->
                 <td>
                     <span class="file-type">
@@ -518,10 +572,12 @@
                         .${escapeHtml(extension)}
                     </small>
                 </td>
+
                 <!-- Size -->
                 <td>
                     ${formatBytes(file.size)}
                 </td>
+
                 <!-- SHA -->
                 <td>
                     <span class="sha">
@@ -531,9 +587,11 @@
                         ...
                     </span>
                 </td>
+
                 <!-- Actions -->
                 <td>
                     <div class="actions">
+
                         <button
                             class="btn btn-copy"
                             onclick="copyUrl(this.dataset.url, this)"
@@ -541,6 +599,7 @@
                         >
                             📋 คัดลอก
                         </button>
+
                         <a
                             class="btn btn-open"
                             href="${rawUrl}"
@@ -548,6 +607,7 @@
                         >
                             👁️ เปิด
                         </a>
+
                         <a
                             class="btn btn-download"
                             href="${rawUrl}"
@@ -555,6 +615,7 @@
                         >
                             ⬇️ ดาวน์โหลด
                         </a>
+
                         <a
                             class="btn btn-open"
                             href="${file.html_url}"
@@ -562,19 +623,23 @@
                         >
                             GitHub
                         </a>
+
                     </div>
                 </td>
             </tr>
         `;
             });
+
             html += `
                 </tbody>
             </table>
         </div>
     `;
+
             container.innerHTML =
                 html;
         }
+
         /* =========================================================
            Summary
         ========================================================= */
@@ -583,17 +648,20 @@
                 .getElementById("fileCount")
                 .textContent =
                 files.length.toLocaleString();
+
             const total =
                 files.reduce(
                     (sum, file) =>
                         sum + (file.size || 0),
                     0
                 );
+
             document
                 .getElementById("totalSize")
                 .textContent =
                 formatBytes(total);
         }
+
         /* =========================================================
            Copy
         ========================================================= */
@@ -602,32 +670,44 @@
                 await navigator
                     .clipboard
                     .writeText(url);
+
                 const old =
                     button.innerHTML;
+
                 button.innerHTML =
                     "✓ คัดลอกแล้ว";
+
                 setTimeout(() => {
                     button.innerHTML =
                         old;
                 }, 1500);
+
             } catch (error) {
                 const input =
                     document.createElement("input");
+
                 input.value =
                     url;
+
                 document.body
                     .appendChild(input);
+
                 input.select();
+
                 document.execCommand("copy");
+
                 input.remove();
+
                 button.innerHTML =
                     "✓ คัดลอกแล้ว";
+
                 setTimeout(() => {
                     button.innerHTML =
                         "📋 คัดลอก";
                 }, 1500);
             }
         }
+
         /* =========================================================
            Bytes
         ========================================================= */
@@ -635,6 +715,7 @@
             if (!bytes) {
                 return "0 B";
             }
+
             const units = [
                 "B",
                 "KB",
@@ -642,11 +723,13 @@
                 "GB",
                 "TB"
             ];
+
             const index =
                 Math.floor(
                     Math.log(bytes) /
                     Math.log(1024)
                 );
+
             return (
                 parseFloat(
                     (
@@ -659,28 +742,33 @@
                 units[index]
             );
         }
+
         /* =========================================================
            Extension
         ========================================================= */
         function getExtension(name) {
             const parts =
                 name.split(".");
+
             if (parts.length <= 1) {
                 return "";
             }
+
             return parts
                 .pop()
                 .toLowerCase();
         }
+
         /* =========================================================
            Type
         ========================================================= */
         function getFileType(name) {
             const ext =
                 getExtension(name);
+
             const types = {
-                jpg: "JPEG Image",
-                jpeg: "JPEG Image",
+                g: "EG Image",
+                eg: "EG Image",
                 png: "PNG Image",
                 gif: "GIF Image",
                 webp: "WebP Image",
@@ -705,18 +793,20 @@
                 xls: "Excel",
                 xlsx: "Excel"
             };
+
             return (
                 types[ext] ||
                 "File"
             );
         }
+
         /* =========================================================
            Image
         ========================================================= */
         function isImage(name) {
             return [
-                "jpg",
-                "jpeg",
+                "g",
+                "eg",
                 "png",
                 "gif",
                 "webp",
@@ -725,12 +815,14 @@
                 getExtension(name)
             );
         }
+
         /* =========================================================
            Icon
         ========================================================= */
         function getFileIcon(name) {
             const ext =
                 getExtension(name);
+
             const icons = {
                 pdf: "📕",
                 html: "🌐",
@@ -750,6 +842,7 @@
                 xls: "📊",
                 xlsx: "📊"
             };
+
             return `
         <div style="
             font-size:35px;
@@ -759,6 +852,7 @@
         </div>
     `;
         }
+
         /* =========================================================
            Escape HTML
         ========================================================= */
@@ -770,6 +864,7 @@
                 .replace(/"/g, "&quot;")
                 .replace(/'/g, "&#039;");
         }
+
         /* =========================================================
            Escape Attribute
         ========================================================= */
@@ -781,6 +876,7 @@
                 .replace(/</g, "&lt;")
                 .replace(/>/g, "&gt;");
         }
+
         /* =========================================================
            Start
         ========================================================= */
